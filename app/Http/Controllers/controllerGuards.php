@@ -18,11 +18,8 @@ class controllerGuards extends Controller
         $data = $request->all();
         $response->data = ObjResponse::DefaultResponse();
         try {
-            foreach ($data as $key => $value) {
-                if (strpos($key, 'picture') === 0) {
                     // Obtén el número de la imagen desde la clave
-                    $i = substr($key, strlen('picture'));
-                    $archivo = $request->file("picture$i");
+                    $archivo = $request->file("picture");
          
                     $nombreArchivo = $archivo->getClientOriginalName();
                     $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
@@ -30,26 +27,33 @@ class controllerGuards extends Controller
                     $guard = new Guards();
 
                     $guard->picture = "http://127.0.0.1:8000"."/Resguardos/".$nuevoNombreArchivo;
-                    if ($request->{"facture$i"}) {
-                        $guard->facture = $request->{"facture$i"};
+                    $guard->stock_number = $request->{"stock_number"};
+
+                    if ($request->{"type"}) {
+                        $guard->type = $request->{"type"};
                     }
-                    if ($request->{"emisor$i"}) {
-                        $guard->emisor = $request->{"emisor$i"};
-                    }
-                    $guard->description = $request->{"description$i"};
-                    $guard->type = $request->{"type$i"};
-                    $guard->value = $request->{"value$i"};
-                    $guard->name = $request->{"name$i"};
-                    $guard->group = $request->{"group$i"};
-                    $guard->numberconsecutive = $request->{"numberconsecutive$i"};
-                    $guard->label = $request->{"label$i"};
-                    $guard->payroll = $request->{"payroll$i"};
+                   
+                    $guard->description = $request->{"description"};
+                    $guard->brand = $request->{"brand"};
+                    $guard->state = $request->{"state"};
+                    $guard->serial = $request->{"serial"};
+                    $guard->airlne = $request->{"airlne"};
+                    $guard->payroll = $request->{"payroll"};
+                    $guard->employeed = $request->{"employeed"};
+                    $guard->group = $request->{"group"};
+
                     $guard->user_id = Auth::id();
+
+                    $guard->date = $request->{"date"};
+
+                    if ($request->{"observations"}) {
+                        $guard->observations = $request->{"observations"};
+                    }
                     $guard->save();
                    
-                }
                 
-            }// Puedes guardar la información de cada archivo en la base de datos si es necesario.
+                
+            // Puedes guardar la información de cada archivo en la base de datos si es necesario.
                 
             
     
