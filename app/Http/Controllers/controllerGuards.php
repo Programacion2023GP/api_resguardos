@@ -25,9 +25,23 @@ class controllerGuards extends Controller
                     $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
                     $archivo->move(public_path("Resguardos/"),$nuevoNombreArchivo);
                     $guard = new Guards();
-
+                    $ultimoGuard = Guards::orderBy('id', 'desc')->first();
+                    if ($ultimoGuard) {
+                        // Obtener el número después del prefijo 'C-'
+                        $numeroActual = intval(substr($ultimoGuard->stock_number, 2));
+                    
+                        // Incrementar el número
+                        $nuevoNumero = $numeroActual + 1;
+                    
+                        // Crear el nuevo stock_number con el prefijo y el nuevo número
+                        $nuevoStockNumber = 'C-' . $nuevoNumero;
+                    } else {
+                        // Si no hay registros, empezar con C-1
+                        $nuevoStockNumber = 'C-1';
+                    }
+                    
                     $guard->picture = "http://127.0.0.1:8000"."/Resguardos/".$nuevoNombreArchivo;
-                    $guard->stock_number = $request->{"stock_number"};
+                    $guard->stock_number = $nuevoStockNumber;
 
                     if ($request->{"type"}) {
                         $guard->type = $request->{"type"};
@@ -85,23 +99,28 @@ class controllerGuards extends Controller
 
                     $guard->picture = "http://127.0.0.1:8000"."/Resguardos/".$nuevoNombreArchivo;
             }
-                    if ($request->{"facture"}) {
-                        $guard->facture = $request->{"facture"};
-                    }
-                    if ($request->{"emisor"}) {
-                        $guard->emisor = $request->{"emisor"};
-                    }
-                    $guard->description = $request->{"description"};
-                    $guard->type = $request->{"type"};
-                    $guard->value = $request->{"value"};
-                    $guard->name = $request->{"name"};
-                    $guard->group = $request->{"group"};
-                    $guard->numberconsecutive = $request->{"numberconsecutive"};
-                    $guard->label = $request->{"label"};
-                    $guard->payroll = $request->{"payroll"};
-                    // $guard->user_id = Auth::id();
-                    $guard->save();
-                   
+
+            if ($request->{"type"}) {
+                $guard->type = $request->{"type"};
+            }
+           
+            $guard->description = $request->{"description"};
+            $guard->brand = $request->{"brand"};
+            $guard->state = $request->{"state"};
+            $guard->serial = $request->{"serial"};
+            $guard->airlne = $request->{"airlne"};
+            $guard->payroll = $request->{"payroll"};
+            $guard->employeed = $request->{"employeed"};
+            $guard->group = $request->{"group"};
+
+            $guard->user_id = Auth::id();
+
+            $guard->date = $request->{"date"};
+
+            if ($request->{"observations"}) {
+                $guard->observations = $request->{"observations"};
+            }
+            $guard->save();
                 
                     // Puedes guardar la información de cada archivo en la base de datos si es necesario.
                 
@@ -146,7 +165,10 @@ class controllerGuards extends Controller
         try {
            // $list = DB::select('SELECT * FROM users where active = 1');
            // User::on('mysql_gp_center')->get();
-           $list = Guards::select('users_guards.*', 'users.email')
+           $list = Guards::select('users_guards.*', 'users.email',
+           DB::raw("IF(users_guards.active = 0, 'Inactivo', 'Activo') as exist"),
+
+           )
            ->join('users', 'users.id', '=', 'users_guards.user_id')
            ->orderByDesc('users_guards.id')
        ->orderByDesc('users_guards.payroll')
