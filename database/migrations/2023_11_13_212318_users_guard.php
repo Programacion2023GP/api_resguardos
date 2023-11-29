@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users_guards', function (Blueprint $table) {
             $table->id();
-            $table->string('picture');
+            $table->string('picture')->nullable();
             $table->string('stock_number');
             $table->string('type')->nullable();
             $table->string('description');
