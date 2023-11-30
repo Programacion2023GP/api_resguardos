@@ -18,16 +18,16 @@ use App\Http\Controllers\controllerGuards;
 Route::middleware('auth:sanctum')->group(function(){   
     Route::post('/auth/logout', [ControllerUsers::class, 'logout']);
     Route::get('/users', [ControllerUsers::class, 'index']);
-    Route::delete('/users/{id}', [ControllerUsers::class, 'destroy']);
+    Route::post('/usersdestroy/{id}', [ControllerUsers::class, 'destroy']);
     Route::post('/users/{id}', [ControllerUsers::class, 'update']);
     Route::post('/guards', [controllerGuards::class, 'create']);
     Route::get('/guards', [controllerGuards::class, 'index']);
     Route::get('/guards/admin', [controllerGuards::class, 'indexall']);
 
-    Route::delete('/guards/{id}', [controllerGuards::class, 'destroy']);
+    Route::post('/guardsdestroy/{id}', [controllerGuards::class, 'destroy']);
     Route::post('/guards/update', [controllerGuards::class, 'update']);
 
-    
+   // g@g.com	
 
 });
 Route::post('/auth/login', [ControllerUsers::class, 'login']);
