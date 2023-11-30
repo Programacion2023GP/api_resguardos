@@ -101,7 +101,7 @@ class controllerGuards extends Controller
                     $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
                     $archivo->move(public_path("Resguardos/"),$nuevoNombreArchivo);
 
-                    $guard->picture = "http://127.0.0.1:8000"."/Resguardos/".$nuevoNombreArchivo;
+                    $guard->picture = "https://api-imm.gomezconnect.com"."/Resguardos/".$nuevoNombreArchivo;
             }
 
             if ($request->{"type"}) {
