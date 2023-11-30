@@ -10,6 +10,7 @@ class Guards extends Model
     use HasFactory;
 
 
+
     /**
      * Especificar la conexion si no es la por default
      * @var string
