@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
             "email"=>'admin@gomezpalacio.gob.mx',
             'password' => Hash::make('admin123'),
               'role' => 0,
-           ]);
+        ]);
+        $this->call([
+            GuardsSeeder::class,
+          
+        ]);
     }
 }

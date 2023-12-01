@@ -66,6 +66,7 @@ class ControllerUsers extends Controller
   
            $new_user = User::create([
               'email' => $request->email,
+              'group' => $request->group,
               'password' => Hash::make($request->password),
               'role' => $request->role,
 
@@ -123,6 +124,7 @@ class ControllerUsers extends Controller
                User::where('id', $request->id)
              ->update([
                  'email'=> $request->email,
+                 'group' => $request->group,
                 ]);
  
              $response->data = ObjResponse::CorrectResponse();

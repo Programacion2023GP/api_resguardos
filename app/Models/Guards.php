@@ -42,7 +42,7 @@ class Guards extends Model
      * Nombre de la tabla asociada al modelo.
      * @var string
      */
-    protected $table = 'users_guards';
+    protected $table = 'guards';
 
     /**
      * LlavePrimaria asociada a la tabla.

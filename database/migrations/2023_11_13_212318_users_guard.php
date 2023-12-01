@@ -11,22 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users_guards', function (Blueprint $table) {
+        Schema::create('guards', function (Blueprint $table) {
             $table->id();
             $table->string('picture')->nullable();
             $table->string('stock_number');
             $table->string('type')->nullable();
             $table->string('description');
+            $table->integer('quantity');
+
             $table->string('brand');
             $table->string('state');
             $table->string('serial');
-            $table->string('airlne');
-            $table->integer('payroll');
-            $table->string('group');
+            // $table->string('airlne');
+            // $table->integer('payroll');
+            // $table->string('group');
             $table->date('date');
-            $table->string('employeed');
+            // $table->string('employeed');
             $table->string('observations')->nullable();
-            $table->foreignId('user_id')->constrained('users','id');
+            // $table->foreignId('user_id')->constrained('users','id');
             $table->boolean('active')->default(true);
 
             $table->timestamps();
@@ -40,6 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users_guards');
+        Schema::dropIfExists('guards');
     }
 };
