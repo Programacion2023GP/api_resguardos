@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Hash;
 
 return new class extends Migration
 {
@@ -14,8 +15,10 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();
-            $table->string('group')->nullable();
-            $table->string('password');
+            $table->integer('payroll')->unique();
+            $table->string('name');
+            $table->string('group');
+            $table->string('password')->default(Hash::make('123456'));
             $table->integer('role');
             $table->boolean('active')->default(true);
             $table->rememberToken();

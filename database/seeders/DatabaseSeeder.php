@@ -18,8 +18,10 @@ class DatabaseSeeder extends Seeder
 
         DB::table('users')->insert([
             "email"=>'admin@gomezpalacio.gob.mx',
-            'password' => Hash::make('admin123'),
-              'role' => 0,
+            "name"=>'prueba',
+            "payroll"=>'123456',
+            'group'=>'prueba',
+            'role' => 1,
         ]);
         $this->call([
             GuardsSeeder::class,

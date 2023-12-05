@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->group(function(){
     //NOTE - PETICIONES PARA CERRAR SESION    
     Route::post('/auth/logout', [ControllerUsers::class, 'logout']);
     //NOTE - USUARIOS   
-    Route::get('/users', [ControllerUsers::class, 'index']);
+    Route::get('/users/{role?}', [ControllerUsers::class, 'index']);
     Route::post('/usersdestroy/{id}', [ControllerUsers::class, 'destroy']);
     Route::post('/users/{id}', [ControllerUsers::class, 'update']);
     //NOTE - PETICIONES PARA RESGUARDOS    
