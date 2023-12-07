@@ -102,7 +102,7 @@ class ControllerUsers extends Controller
              case 2:
                 $query->where(function($q) {
                     $q->where(function($q) {
-                        $q->where('role', [ 3, 4]);
+                        $q->whereIn('role', [ 3, 4]);
                     })->orWhere(function($q) {
                         $q->where('role', 2)
                             ->where('id', Auth::user()->id);
@@ -112,7 +112,7 @@ class ControllerUsers extends Controller
              case 3:
                 $query->where(function($q) {
                     $q->where(function($q) {
-                        $q->where('role', 4)
+                        $q->whereIn('role', [4])
                             ->where('group', Auth::user()->group);
                     })->orWhere(function($q) {
                         $q->where('role', 3)
@@ -129,6 +129,52 @@ class ControllerUsers extends Controller
     }
         if ($role !== null) {
            
+            $query->where('role', $role);
+        }
+
+        $list = $query->orderBy('role')->get();
+
+        $response->data = ObjResponse::CorrectResponse();
+        $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
+        $response->data["alert_text"] = "Usuarios encontrados";
+        $response->data["result"] = $list;
+    } catch (\Exception $ex) {
+        $response->data = ObjResponse::CatchResponse($ex->getMessage());
+    }
+    return response()->json($response, $response->data["status_code"]);
+}
+public function reportsUsers(Response $response, $role = null)
+{
+    $response->data = ObjResponse::DefaultResponse();
+    try {
+        $query = User::select('users.*',
+            DB::raw("CASE 
+                WHEN users.role = 1 THEN 'Super Admin'
+                WHEN users.role = 2 THEN 'Administrativo'
+                WHEN users.role = 3 THEN 'Jefe de departamento'
+                WHEN users.role = 4 THEN 'Empleado'
+                ELSE 'Otro'
+            END as type_role")
+        );    
+
+        if ($role == null) {
+            switch(Auth::user()->role){
+                case 1:
+                    $query->whereIn('role', [2, 3, 4]);
+                    break;
+                case 2:
+                    $query->whereIn('role', [3, 4]);
+                    break;
+                case 3:
+                    $query->whereIn('role', [ 4])
+                    ->where('group', Auth::user()->group);
+                    ;
+                    break;
+                case 4:
+                    $query->where('role', 5);
+                    break;
+            }
+        } else {
             $query->where('role', $role);
         }
 
@@ -167,12 +213,36 @@ class ControllerUsers extends Controller
      {
          $response->data = ObjResponse::DefaultResponse();
          try {
-               User::where('id', $request->id)
-             ->update([
-                 'email'=> $request->email,
-                 'group' => $request->group,
-                ]);
- 
+            $user = User::find($request->id);
+            if ($user) {
+                if ($user->email !== $request->email) {
+                    $user->email = $request->email;
+                }
+                
+                if ($user->payroll !== intval($request->payroll)) {
+                    return "entreee";
+                    $user->payroll = intval($request->payroll);
+                }
+                
+                if ($user->name !== $request->name) {
+                    $user->name = $request->name;
+                }
+                
+                if ($user->group !== $request->group) {
+                    $user->group = $request->group;
+                }
+                
+                if ($user->role !== $request->role) {
+                    $user->role = $request->role;
+                }
+            
+                $user->save();
+            
+                // Haz algo después de la actualización, si es necesario
+            } else {
+                // Manejo si el usuario no existe
+            }
+            
              $response->data = ObjResponse::CorrectResponse();
              $response->data["message"] = 'peticion satisfactoria | programa de ejes actualizada.';
              $response->data["alert_text"] = 'Programa de eje actualizado';

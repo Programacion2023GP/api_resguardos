@@ -28,7 +28,7 @@ class controllerGuards extends Controller
                     $nombreArchivo = $archivo->getClientOriginalName();
                     $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
                     $archivo->move(public_path("Resguardos/"),$nuevoNombreArchivo);
-                    $guard->picture = "https://api-imm.gomezconnect.com"."/Resguardos/".$nuevoNombreArchivo;
+                    $guard->picture = "http://127.0.0.1:8000"."/Resguardos/".$nuevoNombreArchivo;
                 }
                     $ultimoGuard = Guards::orderBy('id', 'desc')->first();
                     if ($ultimoGuard) {
@@ -50,19 +50,12 @@ class controllerGuards extends Controller
                     if ($request->{"type"}) {
                         $guard->type = $request->{"type"};
                     }
-                   
+
                     $guard->description = $request->{"description"};
                     $guard->brand = $request->{"brand"};
                     $guard->state = $request->{"state"};
                     $guard->serial = $request->{"serial"};
-                    $guard->airlne = $request->{"airlne"};
-                    $guard->payroll = $request->{"payroll"};
-                    $guard->employeed = $request->{"employeed"};
-                    $guard->group = $request->{"group"};
-
-                    $guard->user_id = Auth::id();
-
-                    $guard->date = $request->{"date"};
+                    $guard->airlane = $request->{"airlane"};
 
                     if ($request->{"observations"}) {
                         $guard->observations = $request->{"observations"};
@@ -150,8 +143,7 @@ class controllerGuards extends Controller
            // $list = DB::select('SELECT * FROM users where active = 1');
            // User::on('mysql_gp_center')->get();
            $list = Guards::
-             where('user_id',Auth::id())->where('active',1)
-            ->orderBy('users_guards.id', 'desc')
+            orderBy('guards.id', 'desc')
               ->get();
   
            $response->data = ObjResponse::CorrectResponse();

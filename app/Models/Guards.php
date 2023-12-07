@@ -24,18 +24,14 @@ class Guards extends Model
         'id',
         'picture',
         'stock_number',
+        'type',
         'description',
         'brand',
-        'type',
         'state',
         'serial',
-        'airlne',
-        'payroll',
-        'group',
-        'employeed',
-        'date',
+        'airlane',
         'observations',
-        'user_id',
+        'active',
     ];
     
     /**

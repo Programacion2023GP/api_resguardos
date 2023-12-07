@@ -16,16 +16,14 @@ return new class extends Migration
             $table->string('picture')->nullable();
             $table->string('stock_number');
             $table->string('type')->nullable();
-            $table->string('description');
-            $table->integer('quantity');
+            $table->string('description')->nullable();
 
-            $table->string('brand');
-            $table->string('state');
-            $table->string('serial');
-            // $table->string('airlne');
+            $table->string('brand')->nullable();
+            $table->string('state')->nullable();
+            $table->string('serial')->nullable();
+             $table->string('airlane')->nullable();
             // $table->integer('payroll');
             // $table->string('group');
-            $table->date('date');
             // $table->string('employeed');
             $table->string('observations')->nullable();
             // $table->foreignId('user_id')->constrained('users','id');
