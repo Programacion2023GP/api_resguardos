@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Users_guards extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.

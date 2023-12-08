@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ControllerUsers;
 use App\Http\Controllers\controllerGuards;
+use App\Http\Controllers\ControllerUsersGuards;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,6 +21,8 @@ Route::middleware('auth:sanctum')->group(function(){
     //NOTE - PETICIONES PARA CERRAR SESION    
     Route::post('/auth/logout', [ControllerUsers::class, 'logout']);
     //NOTE - USUARIOS   
+    Route::get('/user/{id}', [ControllerUsers::class, 'user']);
+
     Route::get('/users/{role?}', [ControllerUsers::class, 'index']);
     Route::get('/reportsUsers', [ControllerUsers::class, 'reportsUsers']);
 
@@ -31,7 +35,12 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/guards/update', [controllerGuards::class, 'update']);
     //NOTE - PETICIONES PARA ADMIN REPORTES DE GUARDS   
     Route::get('/guards/admin', [controllerGuards::class, 'indexall']);
-   
+    Route::get('/guards/showOptions', [controllerGuards::class, 'showOptions']);
+        //NOTE - PETICIONES PARA RESGUARDAR  
+
+    Route::post('/usersguards/create', [ControllerUsersGuards::class, 'create']);
+    Route::get('/usersguards/guardsUser/{id}', [ControllerUsersGuards::class, 'guardsUser']);
+    
 
 });
     //NOTE - PETICIONES PARA SESIONES    

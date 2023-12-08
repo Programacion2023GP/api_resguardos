@@ -29,6 +29,8 @@ class controllerGuards extends Controller
                     $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
                     $archivo->move(public_path("Resguardos/"),$nuevoNombreArchivo);
                     $guard->picture = "http://127.0.0.1:8000"."/Resguardos/".$nuevoNombreArchivo;
+                    // $guard->picture = "https://api-imm.gomezconnect.com"."/Resguardos/".$nuevoNombreArchivo;
+
                 }
                     $ultimoGuard = Guards::orderBy('id', 'desc')->first();
                     if ($ultimoGuard) {
@@ -93,31 +95,28 @@ class controllerGuards extends Controller
                     $nombreArchivo = $archivo->getClientOriginalName();
                     $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
                     $archivo->move(public_path("Resguardos/"),$nuevoNombreArchivo);
+                    $guard->picture = "http://127.0.0.1:8000"."/Resguardos/".$nuevoNombreArchivo;
 
-                    $guard->picture = "https://api-imm.gomezconnect.com"."/Resguardos/".$nuevoNombreArchivo;
+                    // $guard->picture = "https://api-imm.gomezconnect.com"."/Resguardos/".$nuevoNombreArchivo;
             }
 
             if ($request->{"type"}) {
                 $guard->type = $request->{"type"};
             }
            
+           
+
             $guard->description = $request->{"description"};
             $guard->brand = $request->{"brand"};
             $guard->state = $request->{"state"};
             $guard->serial = $request->{"serial"};
-            $guard->airlne = $request->{"airlne"};
-            $guard->payroll = $request->{"payroll"};
-            $guard->employeed = $request->{"employeed"};
-            $guard->group = $request->{"group"};
-
-            $guard->user_id = Auth::id();
-
-            $guard->date = $request->{"date"};
+            $guard->airlane = $request->{"airlane"};
 
             if ($request->{"observations"}) {
                 $guard->observations = $request->{"observations"};
             }
-            $guard->save();
+            $guard->update();
+           
                 
                     // Puedes guardar la información de cada archivo en la base de datos si es necesario.
                 
@@ -155,6 +154,26 @@ class controllerGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
      }
+     public function showOptions(Response $response)
+     {
+         $response->data = ObjResponse::DefaultResponse();
+         try {
+             $list = Guards::select('guards.id', 'guards.description as text')
+                 ->leftJoin('user_guards', 'guards.id', '=', 'user_guards.guards_id')
+                 ->whereNull('user_guards.guards_id') // Filtrar registros que no estén en user_guards
+                 ->orderBy('guards.id', 'desc')
+                 ->get();
+     
+             $response->data = ObjResponse::CorrectResponse();
+             $response->data["message"] = 'Petición satisfactoria | lista de usuarios.';
+             $response->data["alert_text"] = "Usuarios encontrados";
+             $response->data["result"] = $list;
+         } catch (\Exception $ex) {
+             $response->data = ObjResponse::CatchResponse($ex->getMessage());
+         }
+         return response()->json($response, $response->data["status_code"]);
+     }
+     
      public function indexall(Response $response)
      {
         $response->data = ObjResponse::DefaultResponse();
