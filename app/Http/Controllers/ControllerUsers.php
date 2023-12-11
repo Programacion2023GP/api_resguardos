@@ -209,11 +209,22 @@ public function reportsUsers(Response $response, $role = null)
      {
          $response->data = ObjResponse::DefaultResponse();
          try {
-             User::where('id', $id)
-             ->update([
+            $affectedRows = User::where('id', $id)
+            ->whereNotExists(function ($query) use ($id) {
+                $query->select(DB::raw(1))
+                    ->from('user_guards')
+                    ->whereColumn('user_guards.user_id', 'users.id')
+                    ->where('user_guards.active', 1)
+                    ->whereNull('user_guards.deleted_at');
+            })
+            ->update([
                 'active' => DB::raw('NOT active'),
-                //  'deleted_at' => date('Y-m-d H:i:s'),
-             ]);
+            ]);
+
+        if ($affectedRows === 0) {
+            throw new \Exception('No se puede desactivar el resguardo asociado a un usuario activo.');
+        }
+            
              
              $response->data = ObjResponse::CorrectResponse();
              $response->data["message"] = 'peticion satisfactoria | usuario desactivado.';

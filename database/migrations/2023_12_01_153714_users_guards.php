@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users','id');
             $table->foreignId('guards_id')->constrained('guards','id');
+            $table->date('dateup');
+            $table->date('datedown')->nullable();
+            $table->string('observation')->nullable();
             $table->boolean('active')->default(true);
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();

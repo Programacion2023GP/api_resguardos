@@ -142,8 +142,11 @@ class controllerGuards extends Controller
            // $list = DB::select('SELECT * FROM users where active = 1');
            // User::on('mysql_gp_center')->get();
            $list = Guards::
-            orderBy('guards.id', 'desc')
-              ->get();
+           orderBy('guards.id', 'desc')
+           
+           ->get();
+       
+       
   
            $response->data = ObjResponse::CorrectResponse();
            $response->data["message"] = 'peticion satisfactoria | lista de usuarios.';
@@ -158,11 +161,23 @@ class controllerGuards extends Controller
      {
          $response->data = ObjResponse::DefaultResponse();
          try {
-             $list = Guards::select('guards.id', 'guards.description as text')
-                 ->leftJoin('user_guards', 'guards.id', '=', 'user_guards.guards_id')
-                 ->whereNull('user_guards.guards_id') // Filtrar registros que no estén en user_guards
-                 ->orderBy('guards.id', 'desc')
-                 ->get();
+            $results = DB::table('guards')
+            ->select('guards.id', DB::raw('CONCAT(guards.stock_number, " ", guards.description) AS text'))
+            ->leftJoin('user_guards', 'user_guards.guards_id', '=', 'guards.id')
+            ->whereNull('user_guards.guards_id')
+            ->orWhereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('user_guards')
+                    ->whereColumn('user_guards.guards_id', 'guards.id')
+                    ->where('user_guards.active', '=', 1);
+            })
+            ->get();
+        
+
+
+        
+        
+
      
              $response->data = ObjResponse::CorrectResponse();
              $response->data["message"] = 'Petición satisfactoria | lista de usuarios.';
@@ -203,18 +218,29 @@ class controllerGuards extends Controller
      {
          $response->data = ObjResponse::DefaultResponse();
          try {
-            Guards::where('id', $id)
-             ->update([
-                'active' => DB::raw('NOT active'),
-                //  'deleted_at' => date('Y-m-d H:i:s'),
-             ]);
+             $affectedRows = Guards::where('id', $id)
+                 ->whereNotExists(function ($query) use ($id) {
+                     $query->select(DB::raw(1))
+                         ->from('user_guards')
+                         ->whereColumn('user_guards.guards_id', 'guards.id')
+                         ->where('user_guards.active', 1)
+                         ->whereNull('user_guards.deleted_at');
+                 })
+                 ->update([
+                     'active' => DB::raw('NOT active'),
+                 ]);
+     
+             if ($affectedRows === 0) {
+                 throw new \Exception('No se puede desactivar el resguardo asociado a un usuario activo.');
+             }
+     
              $response->data = ObjResponse::CorrectResponse();
-             $response->data["message"] = 'peticion satisfactoria | resguardo desactivado.';
-             $response->data["alert_text"] ='Resguardo desactivado';
- 
+             $response->data["message"] = 'Petición satisfactoria | resguardo desactivado.';
+             $response->data["alert_text"] = 'Resguardo desactivado';
          } catch (\Exception $ex) {
              $response->data = ObjResponse::CatchResponse($ex->getMessage());
          }
          return response()->json($response, $response->data["status_code"]);
      }
+     
 }

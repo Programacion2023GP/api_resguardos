@@ -18,6 +18,9 @@ class Users_guards extends Model
         'id',
         'user_id',
         'guards_id',
+        'dateup',
+        'datedown',
+        'observation',
         'active',
 
     ];
