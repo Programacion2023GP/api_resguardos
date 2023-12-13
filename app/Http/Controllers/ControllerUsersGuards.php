@@ -101,4 +101,27 @@ class ControllerUsersGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
+    public function group(Response $response, string $group)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+            $list = User::select('users.*', 'user_guards.*', 'guards.*','user_guards.id as idguard', 'user_guards.active as used')
+            ->join('user_guards', 'user_guards.user_id', '=', 'users.id')
+            ->join('guards', 'user_guards.guards_id', '=', 'guards.id')
+            ->where('users.group', $group) // Filtrar por el ID proporcionado
+            ->orderBy('users.id', 'desc') // Ordenar por el campo ID de users (o el campo deseado)
+
+            ->get();
+
+        
+    
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'Petición satisfactoria | lista de usuarios.';
+            $response->data["alert_text"] = "Usuarios encontrados";
+            $response->data["result"] = $list;
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
 }    

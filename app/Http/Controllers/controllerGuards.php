@@ -161,17 +161,19 @@ class controllerGuards extends Controller
      {
          $response->data = ObjResponse::DefaultResponse();
          try {
-            $results = DB::table('guards')
-            ->select('guards.id', DB::raw('CONCAT(guards.stock_number, " ", guards.description) AS text'))
-            ->leftJoin('user_guards', 'user_guards.guards_id', '=', 'guards.id')
-            ->whereNull('user_guards.guards_id')
-            ->orWhereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('user_guards')
-                    ->whereColumn('user_guards.guards_id', 'guards.id')
-                    ->where('user_guards.active', '=', 1);
-            })
-            ->get();
+            
+
+            $list = DB::table('guards')
+                ->select('guards.id', DB::raw('CONCAT(guards.stock_number, " ", guards.description) AS text'))
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('user_guards')
+                        ->whereColumn('user_guards.guards_id', 'guards.id')
+                        ->where('user_guards.active', '=', 1);
+                })
+                ->get();
+            
+        
         
 
 

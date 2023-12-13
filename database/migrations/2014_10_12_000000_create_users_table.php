@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->integer('payroll')->unique();
             $table->string('name');
-            $table->string('group');
+            $table->string('group');    
+            $table->integer('user_create')->nullable();
             $table->string('password')->default(Hash::make('123456'));
             $table->integer('role');
             $table->boolean('active')->default(true);

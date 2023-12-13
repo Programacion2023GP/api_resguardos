@@ -18,9 +18,9 @@ use App\Http\Controllers\ControllerUsersGuards;
 */
 
 Route::middleware('auth:sanctum')->group(function(){
-    //NOTE - PETICIONES PARA CERRAR SESION    
+    //NOTE - PETICIONES PARA CERRAR SESION
     Route::post('/auth/logout', [ControllerUsers::class, 'logout']);
-    //NOTE - USUARIOS   
+    //NOTE - USUARIOS
     Route::get('/user/{id}', [ControllerUsers::class, 'user']);
 
     Route::get('/users/{role?}', [ControllerUsers::class, 'index']);
@@ -28,24 +28,25 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::post('/usersdestroy/{id}', [ControllerUsers::class, 'destroy']);
     Route::post('/usersupdate', [ControllerUsers::class, 'update']);
-    //NOTE - PETICIONES PARA RESGUARDOS    
+    //NOTE - PETICIONES PARA RESGUARDOS
     Route::post('/guards', [controllerGuards::class, 'create']);
     Route::get('/guards', [controllerGuards::class, 'index']);
     Route::post('/guardsdestroy/{id}', [controllerGuards::class, 'destroy']);
     Route::post('/guards/update', [controllerGuards::class, 'update']);
-    //NOTE - PETICIONES PARA ADMIN REPORTES DE GUARDS   
+    //NOTE - PETICIONES PARA ADMIN REPORTES DE GUARDS
     Route::get('/guards/admin', [controllerGuards::class, 'indexall']);
-        //NOTE - PETICIONES PARA RESGUARDAR  
+        //NOTE - PETICIONES PARA RESGUARDAR
 
     Route::post('/usersguards/create', [ControllerUsersGuards::class, 'create']);
     Route::get('/usersguards/guardsUser/{id}', [ControllerUsersGuards::class, 'guardsUser']);
     Route::post('/usersguards/guardsdestroy/{id}', [ControllerUsersGuards::class, 'destroy']);
     Route::get('/guards/showOptions', [controllerGuards::class, 'showOptions']);
+    Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
+    Route::post('/auth/register', [ControllerUsers::class, 'signup']);
 
+    Route::get('/usersguards/guardsgroup/{group}', [ControllerUsersGuards::class, 'group']);
 
 });
-    //NOTE - PETICIONES PARA SESIONES    
-    Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
+    //NOTE - PETICIONES PARA SESIONES
 
 Route::post('/auth/login', [ControllerUsers::class, 'login']);
-Route::post('/auth/register', [ControllerUsers::class, 'signup']);
