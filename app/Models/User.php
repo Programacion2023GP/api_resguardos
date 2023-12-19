@@ -24,6 +24,7 @@ class User extends Authenticatable
         'group',
         'password',
         'role',
+        'user_create',
         'active',
 
     ];
