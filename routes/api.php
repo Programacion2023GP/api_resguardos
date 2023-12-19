@@ -19,6 +19,7 @@ use App\Http\Controllers\ControllerUsersGuards;
 
 Route::middleware('auth:sanctum')->group(function(){
     //NOTE - PETICIONES PARA CERRAR SESION    
+    Route::post('/auth/register', [ControllerUsers::class, 'signup']);
     Route::post('/auth/logout', [ControllerUsers::class, 'logout']);
     //NOTE - USUARIOS   
     Route::get('/user/{id}', [ControllerUsers::class, 'user']);
@@ -43,9 +44,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/guards/showOptions', [controllerGuards::class, 'showOptions']);
 
 
+    Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
 });
     //NOTE - PETICIONES PARA SESIONES    
-    Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
 
 Route::post('/auth/login', [ControllerUsers::class, 'login']);
-Route::post('/auth/register', [ControllerUsers::class, 'signup']);
+Route::get('/hola', function () {
+    return '¡Hola, Laravel!';
+});
