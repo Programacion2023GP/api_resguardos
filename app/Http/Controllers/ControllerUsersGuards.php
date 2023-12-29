@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\ObjResponse;
 use App\Models\Users_guards;
 use App\Models\User;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
 
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -124,4 +127,58 @@ class ControllerUsersGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
+    public function info(Response $response)
+    {
+        
+            // Contenido a imprimir
+            $printerName = "BrotherPT-P950NW"; // Intentemos con este formato
+            $connector = new WindowsPrintConnector($printerName);
+            $printer = new Printer($connector);
+
+            $currentDateTime = date('d/m/Y H:i:s');
+
+            $printer->text($currentDateTime . "\n");
+            $printer->text(''. "\n");
+
+         
+
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text('' . "\n");
+            $printer->setTextSize(2, 2);
+            $printer->text('cellphone' . "\n");
+            $printer->text('address' . "\n");
+            $printer->setTextSize(1, 2);
+            
+         
+            
+            $printer->feed(3);
+            $printer->cut();
+            $printer->close();
+
+          
+    }
+    public function infoGuard(int $id,Response $response){
+        try {
+            $info = Guards::where('guards.id', $id)
+            ->select('guards.*', 'users.name', 'users.payroll')
+            ->leftJoin('user_guards', 'guards.id', '=', 'user_guards.guards_id')
+            ->leftJoin('users', 'user_guards.user_id', '=', 'users.id')
+            ->where(function ($query) {
+                $query->where('user_guards.active', 1)
+                    ->orWhereNull('user_guards.guards_id');
+            })
+            ->get();
+        
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'Petición satisfactoria | lista de usuarios.';
+            $response->data["alert_text"] = "Usuarios encontrados";
+            $response->data["result"] = $info;
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+
+        }
+        return response()->json($response, $response->data["status_code"]);
+
+    }
+        
 }    

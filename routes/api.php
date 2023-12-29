@@ -55,3 +55,4 @@ Route::post('/auth/login', [ControllerUsers::class, 'login']);
 Route::get('/hola', function () {
     return '¡Hola, Laravel!';
 });
+Route::get('/guards/infoguard/{id}', [ControllerUsersGuards::class, 'infoGuard']);

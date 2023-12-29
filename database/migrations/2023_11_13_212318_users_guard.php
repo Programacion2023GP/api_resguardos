@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('serial')->nullable();
              $table->string('airlane')->nullable();
             // $table->integer('payroll');
-            // $table->string('group');
+            $table->string('group');
             // $table->string('employeed');
             $table->string('observations')->nullable();
             // $table->foreignId('user_id')->constrained('users','id');

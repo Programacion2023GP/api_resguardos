@@ -30,6 +30,7 @@ class Guards extends Model
         'state',
         'serial',
         'airlane',
+        'group',
         'observations',
         'active',
     ];
