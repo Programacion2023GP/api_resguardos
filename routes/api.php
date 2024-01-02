@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/usersguards/guardsgroup/{group}', [ControllerUsersGuards::class, 'group']);
 
     Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
+    Route::get('/guards/infoguard/{id}', [ControllerUsersGuards::class, 'infoGuard']);
 });
     //NOTE - PETICIONES PARA SESIONES    
 
@@ -55,4 +56,3 @@ Route::post('/auth/login', [ControllerUsers::class, 'login']);
 Route::get('/hola', function () {
     return '¡Hola, Laravel!';
 });
-Route::get('/guards/infoguard/{id}', [ControllerUsersGuards::class, 'infoGuard']);
