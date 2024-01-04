@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'group'=>'prueba',
             'role' => 1,
             'password' => Hash::make('Superadmin2024')
-
+           
         ]);
         $this->call([
             GuardsSeeder::class,

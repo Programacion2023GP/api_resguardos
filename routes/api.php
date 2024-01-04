@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ControllerAirlanes;
+use App\Http\Controllers\ControllerGroups;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ControllerUsers;
@@ -48,6 +50,16 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/usersguards/guardsgroup/{group}', [ControllerUsersGuards::class, 'group']);
 
     Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
+    Route::get('/groups', [ControllerGroups::class, 'index']);
+    Route::post('/groups/destroy/{id}', [ControllerGroups::class, 'destroy']);
+    Route::post('/groups/update', [ControllerGroups::class, 'update']);
+
+    Route::post('/groups', [ControllerGroups::class, 'create']);
+    Route::get('/airlanes', [ControllerAirlanes::class, 'index']);
+    Route::post('/airlanes', [ControllerAirlanes::class, 'create']);
+    Route::post('/airlanes/destroy/{id}', [ControllerAirlanes::class, 'destroy']);
+
+    
 });
 Route::get('/guards/infoguard/{id}', [ControllerUsersGuards::class, 'infoGuard']);
     //NOTE - PETICIONES PARA SESIONES    
