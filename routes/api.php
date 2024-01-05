@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ControllerAirlanes;
+use App\Http\Controllers\ControllerAirlanesGroups;
 use App\Http\Controllers\ControllerGroups;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -58,9 +59,13 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/airlanes', [ControllerAirlanes::class, 'index']);
     Route::post('/airlanes', [ControllerAirlanes::class, 'create']);
     Route::post('/airlanes/destroy/{id}', [ControllerAirlanes::class, 'destroy']);
+    Route::post('/airlanes/update', [ControllerAirlanes::class, 'update']);
 
+    Route::post('/airlanesgroup', [ControllerAirlanesGroups::class, 'create']);
+    Route::get('/airlanesgroup/{id}', [ControllerAirlanesGroups::class, 'index']);
     
 });
+Route::post('/airlanesgroup/destroy/{id}', [ControllerAirlanesGroups::class, 'destroy']);
 Route::get('/guards/infoguard/{id}', [ControllerUsersGuards::class, 'infoGuard']);
     //NOTE - PETICIONES PARA SESIONES    
 

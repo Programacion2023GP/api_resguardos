@@ -24,8 +24,8 @@ return new class extends Migration
              $table->string('airlane')->nullable();
             // $table->integer('payroll');
             $table->string('group');
-            // $table->string('employeed');
             $table->string('observations')->nullable();
+            $table->string('motive')->nullable();
             // $table->foreignId('user_id')->constrained('users','id');
             $table->boolean('active')->default(true);
 

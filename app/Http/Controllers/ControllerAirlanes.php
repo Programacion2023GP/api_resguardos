@@ -71,4 +71,24 @@ class ControllerAirlanes extends Controller
          }
          return response()->json($response, $response->data["status_code"]);
      }
+     public function update(Request $request, Response $response)
+     {
+         $response->data = ObjResponse::DefaultResponse();
+         try {
+            $group = Airlane::find($request->id);
+            if ($group) {
+                $group->name = $request->name;
+                $group->save();
+
+            }
+
+             $response->data = ObjResponse::CorrectResponse();
+             $response->data["message"] = 'peticion satisfactoria | adscripción actualizada.';
+             $response->data["alert_text"] = 'adscripción actualizado';
+
+         } catch (\Exception $ex) {
+             $response->data = ObjResponse::CatchResponse($ex->getMessage());
+         }
+         return response()->json($response, $response->data["status_code"]);
+     }
 }

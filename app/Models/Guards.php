@@ -32,6 +32,7 @@ class Guards extends Model
         'airlane',
         'group',
         'observations',
+        'motive',
         'active',
     ];
     

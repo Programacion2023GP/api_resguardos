@@ -218,7 +218,7 @@ class controllerGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
      }
-     public function destroy(int $id, Response $response)
+     public function destroy(int $id, Response $response,Request $request)
      {
          $response->data = ObjResponse::DefaultResponse();
          try {
@@ -231,8 +231,10 @@ class controllerGuards extends Controller
                          ->whereNull('user_guards.deleted_at');
                  })
                  ->update([
-                     'active' => DB::raw('NOT active'),
-                 ]);
+                    'motive' => $request->motive ? $request->motive : null,
+                    'active' => DB::raw('NOT active'),
+                ]);
+                
      
              if ($affectedRows === 0) {
                  throw new \Exception('No se puede desactivar el resguardo asociado a un usuario activo.');
