@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
 
         DB::table('users')->insert([
             "email"=>'admin@gomezpalacio.gob.mx',
-            "name"=>'prueba',
-            "payroll"=>'123456',
-            'group'=>'prueba',
+            "name"=>'Super Admin sistemas',
+            "payroll"=>'999999',
+            'group'=>'CETIC',
             'role' => 1,
             'password' => Hash::make('Superadmin2024')
            

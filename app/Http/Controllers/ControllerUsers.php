@@ -20,7 +20,6 @@ class ControllerUsers extends Controller
           $field = 'email';
           $value = $request->email;
        }
-
        $request->validate([
           $field => 'required',
           'password' => 'required'
@@ -124,7 +123,7 @@ class ControllerUsers extends Controller
                 $query->where(function($q) {
                     $q->where(function($q) {
                         $q->whereIn('role', [4])
-                        ->where('user_create', Auth::user()->id)
+                        // ->where('user_create', Auth::user()->id)
                             ->where('group', Auth::user()->group);
                     })->orWhere(function($q) {
                         $q->where('role', 3)
@@ -233,7 +232,7 @@ public function reportsUsers(Response $response, $role = null)
                 case 3:
                     $query->whereIn('role', [ 4])
                     ->where('group', Auth::user()->group)
-                    ->where('user_create', Auth::user()->id);
+                    // ->where('user_create', Auth::user()->id);
 
                     ;
                     break;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\ObjResponse;
 use App\Models\Guards;
+use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -159,14 +160,16 @@ class controllerGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
      }
-     public function showOptions(Response $response)
+     public function showOptions(Response $response,int $id)
      {
          $response->data = ObjResponse::DefaultResponse();
          try {
+            $user =User::find($id);
             
 
             $list = DB::table('guards')
                 ->select('guards.id', DB::raw('CONCAT(guards.stock_number, " ", guards.description) AS text'))
+                ->where('guards.group',$user->group)
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('user_guards')
