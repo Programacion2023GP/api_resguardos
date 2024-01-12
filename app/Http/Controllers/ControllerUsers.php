@@ -177,7 +177,7 @@ public function reportsUsers(Response $response, $role = null)
             DB::raw("CASE
                 WHEN users.role = 1 THEN 'Super Admin'
                 WHEN users.role = 2 THEN 'Administrativo'
-                WHEN users.role = 3 THEN 'Jefe de departamento'
+                WHEN users.role = 3 THEN 'Enlance'
                 WHEN users.role = 4 THEN 'Empleado'
                 ELSE 'Otro'
             END as type_role")
