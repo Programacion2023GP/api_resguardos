@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\ObjResponse;
-use App\Models\Group;
+use App\Models\Types;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ControllerGroups extends Controller
+class ControllerTypes extends Controller
 {
     public function create(Request $request, Response $response)
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $create = Group::create([
+            $create = Types::create([
                 'name' => $request->name,
 
             ]);
@@ -35,11 +35,9 @@ class ControllerGroups extends Controller
         try {
            // $list = DB::select('SELECT * FROM users where active = 1');
            // User::on('mysql_gp_center')->get();
-           $list = Group::orderBy('id', 'desc')
+           $list = Types::orderBy('id', 'desc')
            ->where('active', 1)
-           ->whereNotIn('id', function ($query) {
-               $query->select('groups_id')->from('airlanes_groups');
-           })
+          
            ->get();
        
        
@@ -60,7 +58,7 @@ class ControllerGroups extends Controller
          try {
              
  
-            Group::where('id', $id)
+            Types::where('id', $id)
              ->update([
                 'active' => DB::raw('NOT active'),
              ]);
@@ -78,7 +76,7 @@ class ControllerGroups extends Controller
      {
          $response->data = ObjResponse::DefaultResponse();
          try {
-            $group = Group::find($request->id);
+            $group = Types::find($request->id);
             if ($group) {
                 $group->name = $request->name;
                 $group->save();

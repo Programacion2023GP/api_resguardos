@@ -50,9 +50,9 @@ class controllerGuards extends Controller
                     
                     $guard->stock_number = $nuevoStockNumber;
 
-                    if ($request->{"type"}) {
-                        $guard->type = $request->{"type"};
-                    }
+                   
+                    $guard->type_id = $request->{"type_id"};
+                    $guard->number_korima = $request->{"number_korima"};
 
                     $guard->description = $request->{"description"};
                     $guard->brand = $request->{"brand"};
@@ -102,12 +102,11 @@ class controllerGuards extends Controller
                     // $guard->picture = "https://api-imm.gomezconnect.com"."/Resguardos/".$nuevoNombreArchivo;
             }
 
-            if ($request->{"type"}) {
-                $guard->type = $request->{"type"};
-            }
+      
            
-           
+            $guard->number_korima = $request->{"number_korima"};
 
+            $guard->type_id = $request->{"type_id"};
             $guard->description = $request->{"description"};
             $guard->brand = $request->{"brand"};
             $guard->state = $request->{"state"};
@@ -144,9 +143,10 @@ class controllerGuards extends Controller
         try {
            // $list = DB::select('SELECT * FROM users where active = 1');
            // User::on('mysql_gp_center')->get();
-           $list = Guards::
+           $list = Guards::select('guards.*', 'types.name as Tipo')->
            orderBy('guards.id', 'desc')
-           
+           ->leftjoin('types', 'types.id', '=', 'guards.type_id')
+
            ->get();
        
        
@@ -207,6 +207,7 @@ class controllerGuards extends Controller
 
            )
            ->join('users', 'users.id', '=', 'users_guards.user_id')
+
            ->orderByDesc('users_guards.id')
        ->orderByDesc('users_guards.payroll')
            ->get();

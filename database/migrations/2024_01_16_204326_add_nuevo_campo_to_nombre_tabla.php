@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('groups', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->boolean('active')->default(true);
-            $table->timestamps();
-            $table->dateTime('deleted_at')->nullable();
+        Schema::table('nombre_tabla', function (Blueprint $table) {
+            //
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('groups');
+        Schema::table('nombre_tabla', function (Blueprint $table) {
+            //
+        });
     }
 };

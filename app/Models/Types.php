@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Group extends Model
+class Types extends Model
 {
     use HasFactory;
 
@@ -20,7 +20,7 @@ class Group extends Model
         'active',
 
     ];
-    protected $table = 'groups';
+    protected $table = 'types';
 
     /**
      * The attributes that should be hidden for serialization.

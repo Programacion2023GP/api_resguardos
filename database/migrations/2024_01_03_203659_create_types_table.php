@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('airlanes_groups', function (Blueprint $table) {
+        Schema::create('types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('airlanes_id')->constrained('airlanes','id');
-            $table->foreignId('groups_id')->constrained('groups','id');
+            $table->string('name');
+            
             $table->boolean('active')->default(true);
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('airlanes_groups');
+        Schema::dropIfExists('types');
     }
 };

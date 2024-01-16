@@ -15,15 +15,16 @@ return new class extends Migration
             $table->id();
             $table->string('picture')->nullable();
             $table->string('stock_number');
-            $table->string('type')->nullable();
             $table->string('description')->nullable();
 
             $table->string('brand')->nullable();
             $table->string('state')->nullable();
             $table->string('serial')->nullable();
              $table->string('airlane')->nullable();
-            // $table->integer('payroll');
-            $table->string('group');
+             
+
+             $table->string('group');
+
             $table->string('observations')->nullable();
             $table->string('motive')->nullable();
             // $table->foreignId('user_id')->constrained('users','id');

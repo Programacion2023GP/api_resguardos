@@ -31,6 +31,8 @@ class Guards extends Model
         'serial',
         'airlane',
         'group',
+        'type_id',
+        'number_korima',
         'observations',
         'motive',
         'active',
