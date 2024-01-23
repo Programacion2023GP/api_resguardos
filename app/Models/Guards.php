@@ -29,7 +29,6 @@ class Guards extends Model
         'brand',
         'state',
         'serial',
-        'airlane',
         'group',
         'type_id',
         'number_korima',

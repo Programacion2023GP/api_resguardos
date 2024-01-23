@@ -58,7 +58,6 @@ class controllerGuards extends Controller
                     $guard->brand = $request->{"brand"};
                     $guard->state = $request->{"state"};
                     $guard->serial = $request->{"serial"};
-                    $guard->airlane = $request->{"airlane"};
                     $guard->group = $request->{"group"};
 
                     if ($request->{"observations"}) {
@@ -111,7 +110,6 @@ class controllerGuards extends Controller
             $guard->brand = $request->{"brand"};
             $guard->state = $request->{"state"};
             $guard->serial = $request->{"serial"};
-            $guard->airlane = $request->{"airlane"};
             $guard->group = $request->{"group"};
 
             if ($request->{"observations"}) {

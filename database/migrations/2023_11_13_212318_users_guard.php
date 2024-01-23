@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('brand')->nullable();
             $table->string('state')->nullable();
             $table->string('serial')->nullable();
-             $table->string('airlane')->nullable();
              
 
              $table->string('group');

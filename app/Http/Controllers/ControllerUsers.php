@@ -143,7 +143,7 @@ class ControllerUsers extends Controller
             $query->where('role', $role);
         }
 
-        $list = $query->orderBy('role')->get();
+        $list = $query->orderBy('role')->where('active', 1)->get();
 
         $response->data = ObjResponse::CorrectResponse();
         $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
@@ -186,41 +186,10 @@ public function reportsUsers(Response $response, $role = null)
         if ($role == null) {
             switch(Auth::user()->role){
                 case 1:
-                    $query->whereIn('role', [2, 3, 4])
-                    ->where(function($query) {
-                        $query->where('user_create', Auth::user()->id) // Usuarios creados por el superadmin
-                              ->orWhere(function($query) {
-                                  $query->where('role', 2) // Admins
-                                        ->where('user_create', Auth::user()->id); // Usuarios creados por el superadmin
-                              })
-                              ->orWhere(function($query) {
-                                  $query->where('role', 3) // Jefes de departamento
-                                        ->where('user_create', Auth::user()->id) // Usuarios creados por el superadmin
-                                        ->orWhereIn('user_create', function($subquery) {
-                                            $subquery->select('id')
-                                                     ->from('users')
-                                                     ->where('role', 2) // Admins creados por el superadmin
-                                                     ->where('user_create', Auth::user()->id);
-                                        });
-                              })
-                              ->orWhere(function($query) {
-                                  $query->where('role', 4) // Empleados
-                                        ->where('user_create', Auth::user()->id) // Usuarios creados por el superadmin
-                                        ->orWhereIn('user_create', function($subquery) {
-                                            $subquery->select('id')
-                                                     ->from('users')
-                                                     ->where('role', 3) // Jefes de departamento creados por el superadmin
-                                                     ->where('user_create', Auth::user()->id)
-                                                     ->orWhereIn('user_create', function($subsubquery) {
-                                                         $subsubquery->select('id')
-                                                                     ->from('users')
-                                                                     ->where('role', 2) // Admins creados por el superadmin
-                                                                     ->where('user_create', Auth::user()->id);
-                                                     });
-                                        });
-                              });
+                   
+                    $query->where(function($q) {
+                        $q->whereIn('role', [2,3, 4]);
                     });
-
 
                     break;
                 case 2:
@@ -297,7 +266,6 @@ public function reportsUsers(Response $response, $role = null)
                 }
 
                 if ($user->payroll !== intval($request->payroll)) {
-                    return "entreee";
                     $user->payroll = intval($request->payroll);
                 }
 

@@ -58,11 +58,25 @@ class ControllerTypes extends Controller
          try {
              
  
-            Types::where('id', $id)
-             ->update([
+           
+            $affectedRows = Types::where('id', $id)
+            ->where(function ($query) use ($id) {
+                $query->whereNotExists(function ($subquery) use ($id) {
+                    $subquery->select(DB::raw(1))
+                        ->from('guards')
+                        ->whereRaw('guards.type_id = types.id')
+                        ->where('type_id', $id);
+                });
+            })
+            ->update([
                 'active' => DB::raw('NOT active'),
-             ]);
-             
+            ]);
+        
+        if ($affectedRows === 0) {
+            throw new \Exception('No se puede eliminar tiene resguardos de este tipo.');
+        }
+
+
              $response->data = ObjResponse::CorrectResponse();
              $response->data["message"] = 'peticion satisfactoria | resguardo baja.';
              $response->data["alert_text"] ='resguardo baja';
