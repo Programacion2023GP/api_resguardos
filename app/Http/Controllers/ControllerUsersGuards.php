@@ -40,13 +40,14 @@ class ControllerUsersGuards extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $list = User::select('users.*', 'user_guards.*', 'guards.*','user_guards.id as idguard', 'user_guards.active as used', 'types.name as Tipo')
+            $list = User::select('users.*', 'user_guards.*', 'guards.*','user_guards.id as idguard', 'user_guards.active as used','states.name as Estado')
             ->join('user_guards', 'user_guards.user_id', '=', 'users.id')
             ->join('guards', 'user_guards.guards_id', '=', 'guards.id')
             ->leftjoin('types', 'types.id', '=', 'guards.type_id')
+            ->leftjoin('states', 'states.id', '=', 'guards.state_id')
 
             ->where('users.id', $id) // Filtrar por el ID proporcionado
-            ->orderBy('users.id', 'desc') // Ordenar por el campo ID de users (o el campo deseado)
+            ->orderBy('guards.stock_number', 'desc') // Ordenar por el campo ID de users (o el campo deseado)
             ->orderByRaw('user_guards.active DESC') // Ordena por 'active' de forma descendente (1 antes que 0)
 
             ->get();

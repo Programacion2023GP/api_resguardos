@@ -27,7 +27,6 @@ class Guards extends Model
         'type',
         'description',
         'brand',
-        'state',
         'serial',
         'group',
         'type_id',

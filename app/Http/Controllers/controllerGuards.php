@@ -56,7 +56,7 @@ class controllerGuards extends Controller
 
                     $guard->description = $request->{"description"};
                     $guard->brand = $request->{"brand"};
-                    $guard->state = $request->{"state"};
+                    $guard->state_id = $request->{"state_id"};
                     $guard->serial = $request->{"serial"};
                     $guard->group = $request->{"group"};
 
@@ -108,7 +108,7 @@ class controllerGuards extends Controller
             $guard->type_id = $request->{"type_id"};
             $guard->description = $request->{"description"};
             $guard->brand = $request->{"brand"};
-            $guard->state = $request->{"state"};
+            $guard->state_id = $request->{"state_id"};
             $guard->serial = $request->{"serial"};
             $guard->group = $request->{"group"};
 
@@ -141,17 +141,18 @@ class controllerGuards extends Controller
         try {
            // $list = DB::select('SELECT * FROM users where active = 1');
            // User::on('mysql_gp_center')->get();
-           $list = Guards::select('guards.*', 'types.name as Tipo')->
+           $list = Guards::select('guards.*', 'types.name as Tipo', 'states.name as Estado')->
            orderBy('guards.id', 'desc')
            ->leftjoin('types', 'types.id', '=', 'guards.type_id')
+           ->leftjoin('states', 'states.id', '=', 'guards.state_id')
 
            ->get();
        
        
   
            $response->data = ObjResponse::CorrectResponse();
-           $response->data["message"] = 'peticion satisfactoria | lista de usuarios.';
-           $response->data["alert_text"] = "usuarios encontrados";
+           $response->data["message"] = 'peticion satisfactoria | lista de resguardos.';
+           $response->data["alert_text"] = "resguardos encontrados";
            $response->data["result"] = $list;
         } catch (\Exception $ex) {
            $response->data = ObjResponse::CatchResponse($ex->getMessage());

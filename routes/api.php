@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ControllerUsers;
 use App\Http\Controllers\controllerGuards;
+use App\Http\Controllers\ControllerStates;
 use App\Http\Controllers\ControllerTypes;
 use App\Http\Controllers\ControllerUsersGuards;
 
@@ -57,6 +58,13 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/types/update', [ControllerTypes::class, 'update']);
 
     Route::post('/types', [ControllerTypes::class, 'create']);
+    
+    Route::get('/states', [ControllerStates::class, 'index']);
+    Route::post('/states/destroy/{id}', [ControllerStates::class, 'destroy']);
+    Route::post('/states/update', [ControllerStates::class, 'update']);
+
+    Route::post('/states', [ControllerStates::class, 'create']);
+
     Route::get('/airlanes', [ControllerAirlanes::class, 'index']);
     Route::post('/airlanes', [ControllerAirlanes::class, 'create']);
     Route::post('/airlanes/destroy/{id}', [ControllerAirlanes::class, 'destroy']);
