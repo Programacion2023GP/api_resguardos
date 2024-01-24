@@ -72,7 +72,7 @@ class ControllerStates extends Controller
             ]);
         
         if ($affectedRows === 0) {
-            throw new \Exception('No se puede eliminar tiene resguardos de este tipo.');
+            throw new \Exception('No se puede eliminar tiene resguardos de este estado fisico.');
         }
 
 
