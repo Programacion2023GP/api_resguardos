@@ -58,7 +58,14 @@ class controllerGuards extends Controller
                     $guard->brand = $request->{"brand"};
                     $guard->state_id = $request->{"state_id"};
                     $guard->serial = $request->{"serial"};
-                    $guard->group = $request->{"group"};
+                    if (Auth::user()->role==3) {
+                        $guard->group = Auth::user()->group;
+                        
+                    }
+                    else{
+
+                        $guard->group = $request->{"group"};
+                    }
 
                     if ($request->{"observations"}) {
                         $guard->observations = $request->{"observations"};
@@ -110,8 +117,14 @@ class controllerGuards extends Controller
             $guard->brand = $request->{"brand"};
             $guard->state_id = $request->{"state_id"};
             $guard->serial = $request->{"serial"};
-            $guard->group = $request->{"group"};
+            if (Auth::user()->role==3) {
+                $guard->group = Auth::user()->group;
+                
+            }
+            else{
 
+                $guard->group = $request->{"group"};
+            }
             if ($request->{"observations"}) {
                 $guard->observations = $request->{"observations"};
             }
