@@ -139,14 +139,21 @@ class controllerGuards extends Controller
      {
         $response->data = ObjResponse::DefaultResponse();
         try {
-           // $list = DB::select('SELECT * FROM users where active = 1');
-           // User::on('mysql_gp_center')->get();
-           $list = Guards::select('guards.*', 'types.name as Tipo', 'states.name as Estado')->
-           orderBy('guards.id', 'desc')
-           ->leftjoin('types', 'types.id', '=', 'guards.type_id')
-           ->leftjoin('states', 'states.id', '=', 'guards.state_id')
+            $list = Guards::select('guards.*', 'types.name as Tipo', 'states.name as Estado')->
+            orderBy('guards.id', 'desc')
+            ->leftjoin('types', 'types.id', '=', 'guards.type_id')
+            ->leftjoin('states', 'states.id', '=', 'guards.state_id');
 
-           ->get();
+           switch(Auth::user()->role){
+            case 1:break;
+            case 2:break;
+            case 3:
+                $list->where('guards.group', Auth::user()->group);
+
+                break;
+             }
+             $list = $list->get();
+          
        
        
   
