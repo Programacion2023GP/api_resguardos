@@ -82,3 +82,4 @@ Route::post('/auth/login', [ControllerUsers::class, 'login']);
 Route::get('/hola', function () {
     return '¡Hola, Laravel!';
 });
+Route::post('/emitirEvento', [ControllerUsers::class, 'emitirEvento']);
