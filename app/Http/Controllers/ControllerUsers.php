@@ -1,18 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Events\Events;
+use App\Models\User;
 use WebSocket\Client;
 
 
-use Illuminate\Http\Request;
+use App\Events\Events;
 use App\Models\ObjResponse;
-use App\Models\User;
 use App\Models\Groupextuser;
+use Illuminate\Http\Request;
 
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -52,8 +52,11 @@ class ControllerUsers extends Controller
           'password' => 'required'
        ]);
        $user = User::where("$field", "$value")->where("active",1)->first();
-
-
+       $query = User::select('users.*',
+       DB::raw("GROUP_CONCAT(DISTINCT groupsextuser.group) as departamentos")
+       )->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id')
+       ->where("users.id",$user->id)
+       ->groupBy('users.id')->orderBy('role')->get();
        if (!$user || !Hash::check($request->password, $user->password)) {
 
           throw ValidationException::withMessages([
@@ -63,11 +66,13 @@ class ControllerUsers extends Controller
              'alert_icon' => 'error',
           ]);
        }
+
+
        $token = $user->createToken($user->email)->plainTextToken;
        $response->data = ObjResponse::CorrectResponse();
        $response->data["message"] = 'peticion satisfactoria | usuario logeado.';
        $response->data["result"]["token"] = $token;
-       $response->data["result"]["user"]= $user;
+       $response->data["result"]["user"]= $query;
        return response()->json($response, $response->data["status_code"]);
     }
     public function logout( Response $response)
@@ -89,16 +94,18 @@ class ControllerUsers extends Controller
         $response->data = ObjResponse::DefaultResponse();
         try {
 
-           // if (!$this->validateAvailability('username',$request->username)->status) return;
-           $User=User::create([
+            
+
+            $User=User::create([
                'email' => $request->email,
                'payroll' => $request->payroll,
                'name' => $request->name,
-               'group' => $request->group,
+               'group' => Auth::user()->role == 1 || Auth::user()->role == 2
+               ?$request->group : Auth::user()->group,
                'role' => $request->role,
                'user_create' => Auth::user()->id,
            ]);
-           if ($request->has('groups')) {
+           if ($request->has('groups') && is_array($request->groups) && count($request->groups) > 0) {
             foreach ($request->groups as $item) {
                 Groupextuser::create([
                     'user_id' => $User->id,
@@ -118,26 +125,34 @@ class ControllerUsers extends Controller
 {
     $response->data = ObjResponse::DefaultResponse();
     try {
-      $query = User::select('users.*','usemp.name as Empleado',
-      DB::raw("CASE
-          WHEN users.role = 1 THEN 'Super Admin'
-          WHEN users.role = 2 THEN 'Administrativo'
-          WHEN users.role = 3 THEN 'Enlance'
-          WHEN users.role = 4 THEN 'Empleado'
-      END as type_role")
-  )
-;
+      $query = null;
+
 
   ;
   if ($role == null) {
 
         switch(Auth::user()->role){
             case 1:
+              $query = User::select('users.*',
+                DB::raw("CASE
+                    WHEN users.role = 1 THEN 'Super Admin'
+                    WHEN users.role = 2 THEN 'Administrativo'
+                    WHEN users.role = 3 THEN 'Enlance'
+                    WHEN users.role = 4 THEN 'Empleado'
+                END as type_role")
+                        );
                 $query = $query->orderBy('role')->where('active', 1)->get();
 
              break;
              case 2:
-
+                $query = User::select('users.*',
+            DB::raw("CASE
+                WHEN users.role = 1 THEN 'Super Admin'
+                WHEN users.role = 2 THEN 'Administrativo'
+                WHEN users.role = 3 THEN 'Enlance'
+                WHEN users.role = 4 THEN 'Empleado'
+            END as type_role")
+                    );
                 $query->where(function($q) {
                     $q->where(function($q) {
                         $q->whereIn('role', [3,4]);
@@ -149,6 +164,32 @@ class ControllerUsers extends Controller
                 $query = $query->orderBy('role')->where('active', 1)->get();
              break;
              case 3:
+                $userAuth = User::select('users.*',
+                DB::raw("CASE
+                    WHEN users.role = 1 THEN 'Super Admin'
+                    WHEN users.role = 2 THEN 'Administrativo'
+                    WHEN users.role = 3 THEN 'Enlance'
+                    WHEN users.role = 4 THEN 'Empleado'
+                END as type_role")
+                        )->orderBy('role')->where('active', 1)->where('users.id', Auth::user()->id)->get();
+
+
+
+
+
+
+                $query = User::select('users.*','usemp.id as identificador','usemp.name as nombre','usemp.payroll as nomina','usemp.email as correo',
+                'usemp.active as activo','usemp.group as grupo','usemp.role as rol',
+            DB::raw("CASE
+                WHEN users.role = 1 THEN 'Super Admin'
+                WHEN users.role = 2 THEN 'Administrativo'
+                WHEN users.role = 3 THEN 'Enlance'
+                WHEN users.role = 4 THEN 'Empleado'
+            END as type_role")
+         
+                    );
+
+
                 $query->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id')
                 ->leftjoin('users as usemp', 'usemp.group', '=', 'groupsextuser.group');
                 $query->where(function($q) {
@@ -166,12 +207,61 @@ class ControllerUsers extends Controller
                     
                 });
                 $query = $query->orderBy('users.role')->where('users.active', 1)->get();
+                $newResult = [];
+                foreach ($userAuth as $value) {
+                    $modifiedValue = [
+                        'id' =>  $value->id,
+                        'email' =>  $value->email,
+                        'payroll' =>  $value->payroll ,
+                        'name' =>  $value->name ,
+                        'group' =>  $value->group ,
+                        'role' => $value->role ,
+                        'active' => $value->active ,
+                        'type_role' => $value->type_role,
+                    ];
                 
+                    $newResult[] = (object)$modifiedValue;
+                }
+
+                foreach ($query as $value) {
+                    if ($value->rol !=null) {
+                        if ($value->rol<4 ) {
+                            continue;
+                        }
+                    }
+                    if ( Auth::user()->id == $value->id && $value->nombre == null) {
+                        continue;
+                    }
+                    $modifiedValue = [
+                        'id' => $value->nombre == null ? $value->id : $value->identificador,
+                        'email' => $value->nombre == null ? $value->email : $value->correo,
+                        'payroll' => $value->nombre == null ? $value->payroll : $value->nomina,
+                        'name' => $value->nombre == null ? $value->name : $value->nombre,
+                        'group' => $value->nombre == null ? $value->group : $value->grupo,
+                        'role' => $value->nombre == null ? $value->role : 4,
+                        'active' => $value->nombre == null ? $value->active : $value->activo,
+                        'type_role' => $value->nombre == null ? $value->type_role : 'Empleado',
+                    ];
+                
+                    $newResult[] = (object)$modifiedValue;
+                }
+                
+                
+
+                $query = $newResult;
             break;
             case 4:
+                $query = User::select('users.*',
+                DB::raw("CASE
+                    WHEN users.role = 1 THEN 'Super Admin'
+                    WHEN users.role = 2 THEN 'Administrativo'
+                    WHEN users.role = 3 THEN 'Enlance'
+                    WHEN users.role = 4 THEN 'Empleado'
+                END as type_role")
+                    );
                 $query->where('role', 5);
                 $query = $query->orderBy('role')->where('active', 1)->get();
-
+            
             break;
         }
     }
@@ -209,51 +299,130 @@ public function reportsUsers(Response $response, $role = null)
 {
     $response->data = ObjResponse::DefaultResponse();
     try {
-        $query = User::select('users.*',
-        DB::raw("CASE
-            WHEN users.role = 1 THEN 'Super Admin'
-            WHEN users.role = 2 THEN 'Administrativo'
-            WHEN users.role = 3 THEN 'Enlace'
-            WHEN users.role = 4 THEN 'Empleado'
-            ELSE 'Otro'
-        END as type_role"),
-        DB::raw("GROUP_CONCAT(groupsextuser.group) as departamentos")
-    )
-    ->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id');
+        $list = null;
+
+
 
 
         if ($role == null) {
             switch(Auth::user()->role){
                 case 1:
-                   
+                    $query = User::select('users.*',
+
+                    DB::raw("CASE
+                        WHEN users.role = 1 THEN 'Super Admin'
+                        WHEN users.role = 2 THEN 'Administrativo'
+                        WHEN users.role = 3 THEN 'Enlace'
+                        WHEN users.role = 4 THEN 'Empleado'
+                        ELSE 'Otro'
+                    END as type_role"),
+                    DB::raw("GROUP_CONCAT(DISTINCT groupsextuser.group) as departamentos")
+                    )->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id');
                     $query->where(function($q) {
                         $q->whereIn('role', [2,3, 4]);
                     });
+                    $list = $query->groupBy('users.id')->orderBy('role')->get();
 
                     break;
                 case 2:
+                    $query = User::select('users.*',
+                    DB::raw("CASE
+                        WHEN users.role = 1 THEN 'Super Admin'
+                        WHEN users.role = 2 THEN 'Administrativo'
+                        WHEN users.role = 3 THEN 'Enlace'
+                        WHEN users.role = 4 THEN 'Empleado'
+                        ELSE 'Otro'
+                    END as type_role"),
+                    DB::raw("GROUP_CONCAT(DISTINCT groupsextuser.group) as departamentos")
+                    )->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id');
                     $query->where(function($q) {
                         $q->whereIn('role', [3, 4]);
                     });
+                    $list = $query->groupBy('users.id')->orderBy('role')->get();
 
                     break;
                 case 3:
-                    $query->whereIn('role', [ 4])
-                    ->where('group', Auth::user()->group)
-                    // ->where('user_create', Auth::user()->id);
-
-                    ;
+                    $query = User::select('users.*','usemp.id as identificador','usemp.name as nombre','usemp.payroll as nomina','usemp.email as correo',
+                    'usemp.active as activo','usemp.group as grupo','usemp.role as rol',
+                DB::raw("CASE
+                    WHEN users.role = 1 THEN 'Super Admin'
+                    WHEN users.role = 2 THEN 'Administrativo'
+                    WHEN users.role = 3 THEN 'Enlance'
+                    WHEN users.role = 4 THEN 'Empleado'
+                END as type_role")
+             
+                        );
+    
+    
+                    $query->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id')
+                    ->leftjoin('users as usemp', 'usemp.group', '=', 'groupsextuser.group');
+                    $query->where(function($q) {
+                        $q->where(function($q) {
+                            $q->whereIn('users.role', [4])
+                            // ->where('user_create', Auth::user()->id)
+                            ->where('users.group', Auth::user()->group);
+                        })->orWhere(function($q) {
+                            $q->where('users.role', 3)
+                                ->where('users.id', Auth::user()->id);
+                        })->orWhere(function($q) {
+                            $q->where('groupsextuser.group', 'usemp.group')
+                            
+                            ;
+    
+                        });                    ;
+                        
+                    });
+                    $query = $query->orderBy('users.role')->get();
+                    $newResult = [];
+                 
+                    foreach ($query as $value) {
+                        if ($value->rol !=null) {
+                            if ($value->rol<4) {
+                             continue;
+                            }
+                        }
+                        if ( Auth::user()->id == $value->id && $value->nombre == null) {
+                            continue;
+                        }
+                        $modifiedValue = [
+                            'id' => $value->nombre == null ? $value->id : $value->identificador,
+                            'email' => $value->nombre == null ? $value->email : $value->correo,
+                            'payroll' => $value->nombre == null ? $value->payroll : $value->nomina,
+                            'name' => $value->nombre == null ? $value->name : $value->nombre,
+                            'group' => $value->nombre == null ? $value->group : $value->grupo,
+                            'role' => $value->nombre == null ? $value->role : 4,
+                            'active' => $value->nombre == null ? $value->active : $value->activo,
+                            'type_role' => $value->nombre == null ? $value->type_role : 'Empleado',
+                        ];
+                    
+                        $newResult[] = (object)$modifiedValue;
+                    }
+                    
+                    
+    
+                    $list = $newResult;
                     break;
                 case 4:
+                    $query = User::select('users.*',
+                    DB::raw("CASE
+                        WHEN users.role = 1 THEN 'Super Admin'
+                        WHEN users.role = 2 THEN 'Administrativo'
+                        WHEN users.role = 3 THEN 'Enlace'
+                        WHEN users.role = 4 THEN 'Empleado'
+                        ELSE 'Otro'
+                    END as type_role"),
+                    DB::raw("GROUP_CONCAT(DISTINCT groupsextuser.group) as departamentos")
+                    )->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id');
                     $query->where('role', 5);
+                    $list = $query->groupBy('users.id')->orderBy('role')->get();
+
                     break;
             }
         } else {
             $query->where('role', $role);
         }
 
-        $list = $query->groupBy('users.id')->orderBy('role')->get();
-
+   
         $response->data = ObjResponse::CorrectResponse();
         $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
         $response->data["alert_text"] = "Usuarios encontrados";
@@ -312,14 +481,22 @@ public function reportsUsers(Response $response, $role = null)
                     $user->name = $request->name;
                 }
 
-                if ($user->group !== $request->group) {
-                    $user->group = $request->group;
-                }
+                    $user->group =   Auth::user()->role == 1 || Auth::user()->role == 2
+                    ?$request->group : Auth::user()->group;
+                
 
                 if ($user->role !== $request->role) {
                     $user->role = $request->role;
                 }
-
+                if ($request->has('groups') && is_array($request->groups) && count($request->groups) > 0) {
+                    Groupextuser::where("user_id",$request->id)->delete();
+                    foreach ($request->groups as $item) {
+                        Groupextuser::create([
+                            'user_id' => $request->id,
+                            'group' => $item['departamento']
+                        ]);
+                    }
+                }
                 $user->save();
 
                 // Haz algo después de la actualización, si es necesario
