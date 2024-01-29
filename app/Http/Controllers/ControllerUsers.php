@@ -485,11 +485,11 @@ public function reportsUsers(Response $response, $role = null)
                     ?$request->group : Auth::user()->group;
                 
 
-                if ($user->role !== $request->role) {
+                if ($user->role !== $request->role && $request->role) {
                     $user->role = $request->role;
                 }
+                Groupextuser::where("user_id",$request->id)->delete();
                 if ($request->has('groups') && is_array($request->groups) && count($request->groups) > 0) {
-                    Groupextuser::where("user_id",$request->id)->delete();
                     foreach ($request->groups as $item) {
                         Groupextuser::create([
                             'user_id' => $request->id,
