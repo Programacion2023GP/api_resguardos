@@ -22,6 +22,7 @@ class Users_guards extends Model
         'datedown',
         'observation',
         'active',
+        'expecting',
 
     ];
     protected $table = 'user_guards';

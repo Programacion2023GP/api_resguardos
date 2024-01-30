@@ -39,6 +39,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/guards', [controllerGuards::class, 'index']);
     Route::post('/guardsdestroy/{id}', [controllerGuards::class, 'destroy']);
     Route::post('/guards/update', [controllerGuards::class, 'update']);
+    Route::post('/guards/expecting/{id}', [ControllerUsersGuards::class, 'expecting']);
+
     //NOTE - PETICIONES PARA ADMIN REPORTES DE GUARDS
     Route::get('/guards/admin', [controllerGuards::class, 'indexall']);
         //NOTE - PETICIONES PARA RESGUARDAR

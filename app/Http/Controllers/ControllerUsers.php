@@ -21,21 +21,18 @@ class ControllerUsers extends Controller
    
     public function emitirEvento()
     {
-        try {
             $socket = new Client("ws://localhost:3001");
 
-            $socket->send(json_encode(['type' => 'join', 'group' => 'Luisao',  'project' => 'administrativos']));
-            $socket->send(json_encode(['type' => 'message', 'group' => 'Luisao',  'project' => 'administrativos','message'=>'HOLA, COMO ESTAS']));
+            $socket->send(json_encode(['type' => 'join', 'group' => 'Luisao',  'project' => 'administrativos','client'=>'channel1']));
+            $socket->send(json_encode(['type' => 'message', 'group' => 'Luisao',  'project' => 'administrativos','client'=>'channel1','message'=>'HOLA, COMO ESTAS 2']));
 
             $response = $socket->receive();
             $responseData = json_decode($response, true);
 
             $socket->close();
+            return response()->json(['status' => 'Mensaje recibido en Laravel']);
 
-            return response()->json(['status' => 'Mensaje enviado', 'respuesta' => $responseData]);
-        } catch (\WebSocket\ConnectionException $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+       
     }
 
 
@@ -443,8 +440,10 @@ public function reportsUsers(Response $response, $role = null)
                     ->from('user_guards')
                     ->whereColumn('user_guards.user_id', 'users.id')
                     ->where('user_guards.active', 1)
+                    ->orWhere('user_guards.expecting', 1)
                     ->whereNull('user_guards.deleted_at');
             })
+           
             ->update([
                 'active' => DB::raw('NOT active'),
             ]);

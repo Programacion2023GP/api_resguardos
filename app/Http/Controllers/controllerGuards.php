@@ -152,10 +152,11 @@ class controllerGuards extends Controller
      {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $list = Guards::select('guards.*', 'types.name as Tipo', 'states.name as Estado')->
+            $list = Guards::select('guards.*', 'types.name as Tipo', 'states.name as Estado','user_guards.expecting')->
             orderBy('guards.id', 'desc')
             ->leftjoin('types', 'types.id', '=', 'guards.type_id')
-            ->leftjoin('states', 'states.id', '=', 'guards.state_id');
+            ->leftjoin('states', 'states.id', '=', 'guards.state_id')
+            ->leftjoin('user_guards', 'user_guards.guards_id', '=', 'guards.id');
 
            switch(Auth::user()->role){
             case 1:break;
@@ -245,14 +246,16 @@ class controllerGuards extends Controller
      {
          $response->data = ObjResponse::DefaultResponse();
          try {
-             $affectedRows = Guards::where('id', $id)
-                 ->whereNotExists(function ($query) use ($id) {
-                     $query->select(DB::raw(1))
-                         ->from('user_guards')
-                         ->whereColumn('user_guards.guards_id', 'guards.id')
-                         ->where('user_guards.active', 1)
-                         ->whereNull('user_guards.deleted_at');
-                 })
+            $affectedRows = Guards::where('id', $id)
+            ->whereNotExists(function ($query) use ($id) {
+                $query->select(DB::raw(1))
+                    ->from('user_guards')
+                    ->whereColumn('user_guards.guards_id', 'guards.id')
+                    ->where('user_guards.expecting','=', 1)
+                    // ->where('user_guards.active','=', 0)
+                    ->whereNull('user_guards.deleted_at');
+            })
+
                  ->update([
                     'motive' => $request->motive ? $request->motive : null,
                     'active' => DB::raw('NOT active'),
@@ -271,5 +274,5 @@ class controllerGuards extends Controller
          }
          return response()->json($response, $response->data["status_code"]);
      }
-     
+    
 }

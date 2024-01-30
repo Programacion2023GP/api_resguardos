@@ -72,6 +72,7 @@ class ControllerUsersGuards extends Controller
             ->update([
                 'observation' => $request->observation,
                'active' => DB::raw('NOT active'),
+               'expecting' => DB::raw('NOT active'),
                'datedown' => date('Y-m-d'),
                //  'deleted_at' => date('Y-m-d H:i:s'),
             ]);
@@ -89,7 +90,7 @@ class ControllerUsersGuards extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $list = User::select('*','user_guards.active as used')
+            $list = User::select('*','user_guards.active as used','user_guards.expecting')
             ->join('user_guards', 'user_guards.user_id', '=', 'users.id')
             ->join('guards', 'user_guards.guards_id', '=', 'guards.id')
     ->where('guards.id', $id) 
@@ -159,6 +160,29 @@ class ControllerUsersGuards extends Controller
             $printer->close();
 
           
+    }
+    public function expecting(int $id, Response $response,Request $request)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+            $affectedRows = Users_guards::where('guards_id', $id)
+            ->where('active', 0)
+            ->where('expecting', 1)
+            ->update([
+                'expecting' => 0, 
+            ]);
+    
+            if ($affectedRows === 0) {
+                throw new \Exception('No se puede desactivar el resguardo asociado a un usuario activo.');
+            }
+    
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'Petición satisfactoria | resguardo desactivado.';
+            $response->data["alert_text"] = 'Resguardo desactivado';
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
     }
     public function infoGuard(int $id,Response $response){
         try {

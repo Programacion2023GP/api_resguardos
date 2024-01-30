@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('datedown')->nullable();
             $table->string('observation')->nullable();
             $table->boolean('active')->default(true);
+            
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();
         });
