@@ -68,11 +68,10 @@ class ControllerUsersGuards extends Controller
         try {
             
 
-            Users_guards::where('id', $id)
-            ->update([
-                'observation' => $request->observation,
-               'active' => DB::raw('NOT active'),
-               'expecting' => DB::raw('NOT active'),
+           $user= Users_guards::where('id', $id)
+           ->update([
+               'observation' => $request->observation,
+               'expecting' => 1,
                'datedown' => date('Y-m-d'),
                //  'deleted_at' => date('Y-m-d H:i:s'),
             ]);
@@ -166,10 +165,12 @@ class ControllerUsersGuards extends Controller
         $response->data = ObjResponse::DefaultResponse();
         try {
             $affectedRows = Users_guards::where('guards_id', $id)
-            ->where('active', 0)
+            ->where('active', 1)
             ->where('expecting', 1)
             ->update([
                 'expecting' => 0, 
+                'active' => 0, 
+
             ]);
     
             if ($affectedRows === 0) {
