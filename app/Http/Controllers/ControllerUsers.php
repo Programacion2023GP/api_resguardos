@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use WebSocket\Client;
 
+use Illuminate\Support\Str;
 
 use App\Events\Events;
 use App\Models\ObjResponse;
@@ -91,7 +92,14 @@ class ControllerUsers extends Controller
         $response->data = ObjResponse::DefaultResponse();
         try {
 
-            
+            $existingUser = User::where('payroll', $request->payroll)->first(); 
+            if ($existingUser) {
+                throw new \Exception('Ya existe un usuario con este número de nomina o correo.');
+            }
+            $existingUser = User::where('email', $request->email)->first();
+            if ($existingUser) {
+                throw new \Exception('Ya existe un usuario con este número de nomina o correo.');
+            }
 
             $User=User::create([
                'email' => $request->email,
@@ -277,12 +285,29 @@ class ControllerUsers extends Controller
     }
     return response()->json($response, $response->data["status_code"]);
 }
+
 public function user(Response $response, $id = null)
 {
     $response->data = ObjResponse::DefaultResponse();
     try {
         $list = User::find($id);
 
+        $response->data = ObjResponse::CorrectResponse();
+        $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
+        $response->data["alert_text"] = "Usuarios encontrados";
+        $response->data["result"] = $list;
+    } catch (\Exception $ex) {
+        $response->data = ObjResponse::CatchResponse($ex->getMessage());
+    }
+    return response()->json($response, $response->data["status_code"]);
+}
+public function group(Response $response, $group = null, $id = null)
+{
+    $response->data = ObjResponse::DefaultResponse();
+    try {
+        $list = User::where("group", $group)->where("role",4)
+        ->whereNotIn("id", [$id])
+        ->get();
         $response->data = ObjResponse::CorrectResponse();
         $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
         $response->data["alert_text"] = "Usuarios encontrados";
@@ -429,6 +454,41 @@ public function reportsUsers(Response $response, $role = null)
     }
     return response()->json($response, $response->data["status_code"]);
 }
+
+public function changeEnlance($usuarioAntiguoId, $usuarioNuevoId,$correonuevo)
+{
+    $usuarioAntiguo = User::find($usuarioAntiguoId);
+    $usuarioNuevo = User::find($usuarioNuevoId);
+    $usuarioAntiguoemail=$usuarioAntiguo->email;
+    $usuarioNuevoemail=$usuarioNuevo->email;
+    $usuarioAntiguorole=$usuarioAntiguo->role;
+    $usuarioNuevorole=$usuarioNuevo->role;
+
+    if ($usuarioAntiguo && $usuarioNuevo) {
+        $correoTemporalNuevo = "tpm" . '@example.com';
+        $correoTemporalAntiguo = "new". '@gmail.com';
+
+        $usuarioNuevo->email = $correoTemporalNuevo;
+
+        $usuarioAntiguo->email = $correoTemporalAntiguo;
+       
+        $usuarioNuevo->save();
+        $usuarioAntiguo->save();
+
+        $usuarioNuevo->email = $usuarioAntiguoemail;
+        $usuarioAntiguo->email = $correonuevo;
+        $usuarioNuevo->role = $usuarioAntiguorole;
+        $usuarioAntiguo->role = $usuarioNuevorole;
+
+        $usuarioNuevo->save();
+        $usuarioAntiguo->save();
+
+        return response()->json(['mensaje' => 'Correos y roles intercambiados con éxito'], 200);
+    } else {
+        return response()->json(['mensaje' => 'Usuarios no encontrados'], 404);
+    }
+}
+
 
      public function destroy(int $id, Response $response)
      {

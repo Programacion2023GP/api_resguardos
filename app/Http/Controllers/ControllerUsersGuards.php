@@ -40,7 +40,8 @@ class ControllerUsersGuards extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $list = User::select('users.*', 'user_guards.*', 'guards.*','user_guards.id as idguard', 'user_guards.active as used','states.name as Estado')
+            $list = User::select('users.*', 'user_guards.*', 'guards.*','user_guards.id as idguard',
+             'user_guards.active as used','states.name as Estado','types.name as Tipo')
             ->join('user_guards', 'user_guards.user_id', '=', 'users.id')
             ->join('guards', 'user_guards.guards_id', '=', 'guards.id')
             ->leftjoin('types', 'types.id', '=', 'guards.type_id')
@@ -160,6 +161,9 @@ class ControllerUsersGuards extends Controller
 
           
     }
+  
+
+
     public function expecting(int $id, Response $response,Request $request)
     {
         $response->data = ObjResponse::DefaultResponse();
@@ -207,6 +211,27 @@ class ControllerUsersGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
 
+    }
+    public function uploadImage(Request $request)
+    {
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+    
+            $fileName = 'bg.jpg';
+            $storagePath = public_path('background');
+    
+            // Crea el directorio si no existe
+            if (!file_exists($storagePath)) {
+                mkdir($storagePath, 0777, true);
+            }
+    
+            // Mueve la imagen al directorio de almacenamiento
+            $image->move($storagePath, $fileName);
+    
+            return response()->json(['message' => 'Imagen guardada exitosamente'], 200);
+        }
+    
+        return response()->json(['message' => 'No se proporcionó ninguna imagen'], 400);
     }
         
 }    

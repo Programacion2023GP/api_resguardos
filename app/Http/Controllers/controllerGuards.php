@@ -245,6 +245,10 @@ class controllerGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
      }
+    
+     
+
+
      public function destroy(int $id, Response $response,Request $request)
      {
          $response->data = ObjResponse::DefaultResponse();

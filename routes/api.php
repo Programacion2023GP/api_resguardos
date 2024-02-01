@@ -34,12 +34,17 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::post('/usersdestroy/{id}', [ControllerUsers::class, 'destroy']);
     Route::post('/usersupdate', [ControllerUsers::class, 'update']);
+    Route::get('/changeEnlance/{usuarioAntiguoId}/{usuarioNuevoId}/{correonuevo}', [ControllerUsers::class, 'changeEnlance']);
+
     //NOTE - PETICIONES PARA RESGUARDOS
     Route::post('/guards', [controllerGuards::class, 'create']);
     Route::get('/guards', [controllerGuards::class, 'index']);
+    Route::get('/usersgroup/{group}/{id}', [ControllerUsers::class, 'group']);
+
     Route::post('/guardsdestroy/{id}', [controllerGuards::class, 'destroy']);
     Route::post('/guards/update', [controllerGuards::class, 'update']);
     Route::post('/guards/expecting/{id}', [ControllerUsersGuards::class, 'expecting']);
+    Route::post('/background', [ControllerUsersGuards::class, 'uploadImage']);
 
     //NOTE - PETICIONES PARA ADMIN REPORTES DE GUARDS
     Route::get('/guards/admin', [controllerGuards::class, 'indexall']);
