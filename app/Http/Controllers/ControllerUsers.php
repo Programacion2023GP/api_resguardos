@@ -126,6 +126,30 @@ class ControllerUsers extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
      }
+
+     public function changeAdmin(Request $request, Response $response)
+     {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+
+            $user = User::find($request->id);
+
+            if ($user) {
+                $user->update([
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                ]);
+          
+            }
+           $response->data = ObjResponse::CorrectResponse();
+           $response->data["message"] = 'peticion satisfactoria | admin actualizado.';
+           $response->data["alert_text"] = "admin actualizado";
+        } catch (\Exception $ex) {
+           $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+     }
+
      public function index(Response $response, $role = null)
 {
     $response->data = ObjResponse::DefaultResponse();

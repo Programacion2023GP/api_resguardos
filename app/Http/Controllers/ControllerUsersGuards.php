@@ -10,6 +10,7 @@ use App\Models\User;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -108,14 +109,17 @@ class ControllerUsersGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
-    public function group(Response $response, string $group)
+    public function group(Response $response, string $group, int $id)
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
             $list = User::select('users.*', 'user_guards.*', 'guards.*','user_guards.id as idguard', 'user_guards.active as used')
             ->join('user_guards', 'user_guards.user_id', '=', 'users.id')
             ->join('guards', 'user_guards.guards_id', '=', 'guards.id')
-            ->where('users.group', $group) // Filtrar por el ID proporcionado
+            ->where('users.group', $group)->where('users.role', 4)
+            ->orWhere('users.group', $group) ->where('users.id',$id)
+
+            // Filtrar por el ID proporcionado
             ->orderBy('users.id', 'desc') // Ordenar por el campo ID de users (o el campo deseado)
 
             ->get();

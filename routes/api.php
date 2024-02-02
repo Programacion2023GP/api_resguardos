@@ -49,44 +49,45 @@ Route::middleware('auth:sanctum')->group(function(){
     //NOTE - PETICIONES PARA ADMIN REPORTES DE GUARDS
     Route::get('/guards/admin', [controllerGuards::class, 'indexall']);
         //NOTE - PETICIONES PARA RESGUARDAR
-
-    Route::post('/usersguards/create', [ControllerUsersGuards::class, 'create']);
-    Route::get('/usersguards/guardsUser/{id}', [ControllerUsersGuards::class, 'guardsUser']);
-    Route::post('/usersguards/guardsdestroy/{id}', [ControllerUsersGuards::class, 'destroy']);
-    Route::get('/guards/showOptions/{id}', [controllerGuards::class, 'showOptions']);
-    Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
-    Route::post('/auth/register', [ControllerUsers::class, 'signup']);
-
-    Route::get('/usersguards/guardsgroup/{group}', [ControllerUsersGuards::class, 'group']);
-
-    Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
-    Route::get('/types', [ControllerTypes::class, 'index']);
-    Route::post('/types/destroy/{id}', [ControllerTypes::class, 'destroy']);
-    Route::post('/types/update', [ControllerTypes::class, 'update']);
-
-    Route::post('/types', [ControllerTypes::class, 'create']);
-    
-    Route::get('/states', [ControllerStates::class, 'index']);
-    Route::post('/states/destroy/{id}', [ControllerStates::class, 'destroy']);
-    Route::post('/states/update', [ControllerStates::class, 'update']);
-
-    Route::post('/states', [ControllerStates::class, 'create']);
-
+        
+        Route::post('/usersguards/create', [ControllerUsersGuards::class, 'create']);
+        Route::get('/usersguards/guardsUser/{id}', [ControllerUsersGuards::class, 'guardsUser']);
+        Route::post('/usersguards/guardsdestroy/{id}', [ControllerUsersGuards::class, 'destroy']);
+        Route::get('/guards/showOptions/{id}', [controllerGuards::class, 'showOptions']);
+        Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
+        Route::post('/auth/register', [ControllerUsers::class, 'signup']);
+        
+        Route::get('/usersguards/guardsgroup/{group}/{id}', [ControllerUsersGuards::class, 'group']);
+        
+        Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
+        Route::get('/types', [ControllerTypes::class, 'index']);
+        Route::post('/types/destroy/{id}', [ControllerTypes::class, 'destroy']);
+        Route::post('/types/update', [ControllerTypes::class, 'update']);
+        
+        Route::post('/types', [ControllerTypes::class, 'create']);
+        
+        Route::get('/states', [ControllerStates::class, 'index']);
+        Route::post('/states/destroy/{id}', [ControllerStates::class, 'destroy']);
+        Route::post('/states/update', [ControllerStates::class, 'update']);
+        
+        Route::post('/states', [ControllerStates::class, 'create']);
+        
     Route::get('/airlanes', [ControllerAirlanes::class, 'index']);
     Route::post('/airlanes', [ControllerAirlanes::class, 'create']);
     Route::post('/airlanes/destroy/{id}', [ControllerAirlanes::class, 'destroy']);
     Route::post('/airlanes/update', [ControllerAirlanes::class, 'update']);
-
+    
     Route::post('/airlanesgroup', [ControllerAirlanesGroups::class, 'create']);
     Route::get('/airlanesgroup/{id}', [ControllerAirlanesGroups::class, 'index']);
     
 });
 Route::post('/airlanesgroup/destroy/{id}', [ControllerAirlanesGroups::class, 'destroy']);
 Route::get('/guards/infoguard/{id}', [ControllerUsersGuards::class, 'infoGuard']);
-    //NOTE - PETICIONES PARA SESIONES    
+//NOTE - PETICIONES PARA SESIONES    
 
 Route::post('/auth/login', [ControllerUsers::class, 'login']);
 Route::get('/hola', function () {
     return '¡Hola, Laravel!';
 });
 Route::post('/emitirEvento', [ControllerUsers::class, 'emitirEvento']);
+Route::post('/usersadminedit', [ControllerUsers::class, 'changeAdmin']);
