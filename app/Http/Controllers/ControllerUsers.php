@@ -158,7 +158,7 @@ class ControllerUsers extends Controller
 
 
   ;
-  if ($role == null) {
+ 
 
         switch(Auth::user()->role){
             case 1:
@@ -170,6 +170,9 @@ class ControllerUsers extends Controller
                     WHEN users.role = 4 THEN 'Empleado'
                 END as type_role")
                         );
+                if ($role) {
+                    $query = $query->where('users.role', $role);        
+                    }
                 $query = $query->orderBy('role')->where('active', 1)->get();
 
              break;
@@ -190,6 +193,9 @@ class ControllerUsers extends Controller
                             ->where('id', Auth::user()->id);
                     });
                 });
+                if ($role) {
+                    $query = $query->where('users.role', $role);        
+                    }
                 $query = $query->orderBy('role')->where('active', 1)->get();
              break;
              case 3:
@@ -293,11 +299,8 @@ class ControllerUsers extends Controller
             
             break;
         }
-    }
-        if ($role !== null) {
-
-            $query->where('role', $role);
-        }
+    
+    
 
 
         $response->data = ObjResponse::CorrectResponse();
