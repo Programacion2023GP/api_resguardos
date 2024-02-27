@@ -237,5 +237,62 @@ class ControllerUsersGuards extends Controller
     
         return response()->json(['message' => 'No se proporcionó ninguna imagen'], 400);
     }
-        
+    public function TypesCharts(Response $response)
+    {
+       $response->data = ObjResponse::DefaultResponse();
+       try {
+           $resultados = DB::select("
+           select types.name as nombre,count(guards.type_id) as total from guards 
+           inner join types on guards.type_id = types.id
+           group by guards.type_id;
+       
+       ");
+       ; // Cambiado a Map::all() para obtener todos los registros de la tabla Map 
+          $response->data = ObjResponse::CorrectResponse();
+          $response->data["message"] = 'peticion satisfactoria | lista de sitios.';
+          $response->data["alert_text"] = "sitios encontrados";
+          $response->data["result"] = $resultados;
+       } catch (\Exception $ex) {
+          $response->data = ObjResponse::CatchResponse($ex->getMessage());
+       }
+       return response()->json($response, $response->data["status_code"]);
+    } 
+    public function StatesCharts(Response $response)
+    {
+       $response->data = ObjResponse::DefaultResponse();
+       try {
+           $resultados = DB::select("
+           select states.name as nombre,count(guards.state_id) as total from guards 
+           inner join states on states.id = guards.state_id
+           group by guards.state_id;
+       
+       ");
+       ; // Cambiado a Map::all() para obtener todos los registros de la tabla Map 
+          $response->data = ObjResponse::CorrectResponse();
+          $response->data["message"] = 'peticion satisfactoria | lista de sitios.';
+          $response->data["alert_text"] = "sitios encontrados";
+          $response->data["result"] = $resultados;
+       } catch (\Exception $ex) {
+          $response->data = ObjResponse::CatchResponse($ex->getMessage());
+       }
+       return response()->json($response, $response->data["status_code"]);
+    }     
+    public function groupsCharts(Response $response)
+    {
+       $response->data = ObjResponse::DefaultResponse();
+       try {
+           $resultados = DB::select("
+           select guards.group as nombre,count(guards.group) as total from guards group by guards.group
+       
+       ");
+       ; // Cambiado a Map::all() para obtener todos los registros de la tabla Map 
+          $response->data = ObjResponse::CorrectResponse();
+          $response->data["message"] = 'peticion satisfactoria | lista de sitios.';
+          $response->data["alert_text"] = "sitios encontrados";
+          $response->data["result"] = $resultados;
+       } catch (\Exception $ex) {
+          $response->data = ObjResponse::CatchResponse($ex->getMessage());
+       }
+       return response()->json($response, $response->data["status_code"]);
+    }     
 }    

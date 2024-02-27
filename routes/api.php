@@ -58,7 +58,10 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('/auth/register', [ControllerUsers::class, 'signup']);
         
         Route::get('/usersguards/guardsgroup/{group}/{id}', [ControllerUsersGuards::class, 'group']);
-        
+        Route::get('/charts/types', [ControllerUsersGuards::class, 'TypesCharts']);
+        Route::get('/charts/states', [ControllerUsersGuards::class, 'StatesCharts']);
+        Route::get('/charts/groups', [ControllerUsersGuards::class, 'groupsCharts']);
+
         Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
         Route::get('/types', [ControllerTypes::class, 'index']);
         Route::post('/types/destroy/{id}', [ControllerTypes::class, 'destroy']);
@@ -91,3 +94,6 @@ Route::get('/hola', function () {
 });
 Route::post('/emitirEvento', [ControllerUsers::class, 'emitirEvento']);
 Route::post('/usersadminedit', [ControllerUsers::class, 'changeAdmin']);
+// Route::get('/charts/types', [ControllerUsersGuards::class, 'TypesCharts']);
+// Route::get('/charts/states', [ControllerUsersGuards::class, 'StatesCharts']);
+// Route::get('/charts/groups', [ControllerUsersGuards::class, 'groupsCharts']);
