@@ -185,9 +185,11 @@ class controllerGuards extends Controller
             $list = DB::table('guards')
                 ->select('guards.id', DB::raw('CONCAT(guards.stock_number, " ", guards.description) AS text'));
 
-            if (Auth::user()->role != 1 || Auth::user()->role != 2) {
+            $userRole = Auth::user()->role;
+            if ($userRole != 1 && $userRole != 2) {
                 $list = $list->where('guards.group', $user->group);
             }
+
             $list = $list->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('user_guards')
@@ -195,6 +197,7 @@ class controllerGuards extends Controller
                     ->where('user_guards.active', '=', 1);
             })
                 ->get();
+
 
 
 
