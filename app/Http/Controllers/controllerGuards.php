@@ -253,26 +253,44 @@ class controllerGuards extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $affectedRows = DB::affectingStatement("
-            UPDATE guards
-            SET guards.active = CASE WHEN guards.active = 1 THEN 0 ELSE 1 END
-            WHERE guards.id = ?
-            AND NOT EXISTS (
-                SELECT 1
-                FROM user_guards
-                WHERE user_guards.guards_id = guards.id 
-                    AND (user_guards.active = 1 OR user_guards.expecting = 1)
-            )
-        ", [$id]);
+            // Primero, obtenemos el estado actual del guardia
+            $currentActiveStatus = DB::table('guards')->where('id', $id)->value('active');
 
-            if ($affectedRows === 0) {
-                throw new \Exception('No se puede desactivar el resguardo asociado a un usuario activo.');
+            // Si el estado actual es 0, simplemente lo cambiamos a 1
+            if ($currentActiveStatus === 0) {
+                $affectedRows = DB::table('guards')
+                    ->where('id', $id)
+                    ->update(['active' => 1]);
+
+                if ($affectedRows === 0) {
+                    throw new \Exception('No se pudo activar el resguardo.');
+                }
+
+                $response->data = ObjResponse::CorrectResponse();
+                $response->data["message"] = 'Petición satisfactoria | resguardo activado.';
+                $response->data["alert_text"] = 'Resguardo activado';
+            } else {
+                // Si el estado actual es 1, realizamos la lógica original
+                $affectedRows = DB::affectingStatement("
+                UPDATE guards
+                SET guards.active = CASE WHEN guards.active = 1 THEN 0 ELSE 1 END
+                WHERE guards.id = ?
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM user_guards
+                    WHERE user_guards.guards_id = guards.id 
+                        AND (user_guards.active = 1 OR user_guards.expecting = 1)
+                )
+            ", [$id]);
+
+                if ($affectedRows === 0) {
+                    throw new \Exception('No se puede desactivar el resguardo asociado a un usuario activo.');
+                }
+
+                $response->data = ObjResponse::CorrectResponse();
+                $response->data["message"] = 'Petición satisfactoria | resguardo desactivado.';
+                $response->data["alert_text"] = 'Resguardo desactivado';
             }
-
-
-            $response->data = ObjResponse::CorrectResponse();
-            $response->data["message"] = 'Petición satisfactoria | resguardo desactivado.';
-            $response->data["alert_text"] = 'Resguardo desactivado';
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());
         }
