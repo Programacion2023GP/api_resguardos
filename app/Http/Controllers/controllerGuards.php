@@ -145,12 +145,13 @@ class controllerGuards extends Controller
                 'guards.*',
                 'types.name as Tipo',
                 'states.name as Estado',
+                'user_guards.active as resguard',
                 DB::raw('MAX(user_guards.expecting) as expecting')
             )->orderBy('guards.id', 'desc')
                 ->leftjoin('types', 'types.id', '=', 'guards.type_id')
                 ->leftjoin('states', 'states.id', '=', 'guards.state_id')
                 ->leftjoin('user_guards', 'user_guards.guards_id', '=', 'guards.id')
-                ->groupBy('guards.id', 'types.name', 'states.name');
+                ->groupBy('guards.id', 'types.name', 'states.name','user_guards.active');
             switch (Auth::user()->role) {
                 case 1:
                     break;
@@ -291,6 +292,30 @@ class controllerGuards extends Controller
                 $response->data["message"] = 'Petición satisfactoria | resguardo desactivado.';
                 $response->data["alert_text"] = 'Resguardo desactivado';
             }
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
+
+    public function habilited(int $id, Response $response, Request $request)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+            // Primero, obtenemos el estado actual del guardia
+        
+            // Si el estado actual es 0, simplemente lo cambiamos a 1
+                DB::table('user_guards')
+                    ->where('user_guards.guards_id', $id)
+                    ->update([
+                        'user_guards.active' => 0,
+                        'user_guards.expecting' => 0
+                    ]);
+        
+                $response->data = ObjResponse::CorrectResponse();
+                $response->data["message"] = 'Petición satisfactoria | resguardo regresado al stock.';
+                $response->data["alert_text"] = 'Resguardo regresado al stock';
+            
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());
         }

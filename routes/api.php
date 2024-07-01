@@ -42,6 +42,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/usersgroup/{group}/{id}', [ControllerUsers::class, 'group']);
 
     Route::post('/guardsdestroy/{id}', [controllerGuards::class, 'destroy']);
+    Route::get('/guardshabilited/{id}', [controllerGuards::class, 'habilited']);
+
     Route::post('/guards/update', [controllerGuards::class, 'update']);
     Route::post('/guards/expecting/{id}', [ControllerUsersGuards::class, 'expecting']);
     Route::post('/background', [ControllerUsersGuards::class, 'uploadImage']);
