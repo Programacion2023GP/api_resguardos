@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ControllerUsers;
 use App\Http\Controllers\controllerGuards;
+use App\Http\Controllers\ControllerKorima;
 use App\Http\Controllers\ControllerStates;
 use App\Http\Controllers\ControllerTypes;
 use App\Http\Controllers\ControllerUsersGuards;
@@ -85,6 +86,10 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/airlanesgroup', [ControllerAirlanesGroups::class, 'create']);
     Route::get('/airlanesgroup/{id}', [ControllerAirlanesGroups::class, 'index']);
     
+    Route::get('/korima', [ControllerKorima::class, 'index']);
+    Route::post('/korima', [ControllerKorima::class, 'create']);
+    Route::post('/korima/update', [ControllerKorima::class, 'update']);
+
 });
 Route::post('/airlanesgroup/destroy/{id}', [ControllerAirlanesGroups::class, 'destroy']);
 Route::get('/guards/infoguard/{id}', [ControllerUsersGuards::class, 'infoGuard']);

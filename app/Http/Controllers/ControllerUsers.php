@@ -39,6 +39,7 @@ class ControllerUsers extends Controller
 
     public function login(Request $request, Response $response)
     {
+        // return $request->all();
        $field = 'username';
        $value = $request->username;
        if ($request->email) {
