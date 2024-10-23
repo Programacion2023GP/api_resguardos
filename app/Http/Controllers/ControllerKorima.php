@@ -164,6 +164,7 @@ class ControllerKorima extends Controller
                 $guard->korima = $request->korima;
                 $guard->observation = $request->observation;
                 if ($guard->picture != null || $guard->korima!= null) {
+                    return $guard;
                     // Si al menos uno de los campos tiene un valor, actualiza el registro
                     $guard->update();                
                 } 
