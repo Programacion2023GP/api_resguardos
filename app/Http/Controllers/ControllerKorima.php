@@ -171,6 +171,12 @@ class ControllerKorima extends Controller
                     // Si al menos uno de los campos tiene un valor, actualiza el registro
                     // $guard->update();                
                 }
+                if ($request->observation!='null') {
+                    $response = ObjResponse::CorrectResponse();
+                    $response["message"] = 'Datos actualizados exitosamente';
+                    $response["alert_text"] = "El registro se ha actualizado correctamente";
+                    return $request->all();                
+                }
                 
                 
                 
