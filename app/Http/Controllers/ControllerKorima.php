@@ -163,7 +163,7 @@ class ControllerKorima extends Controller
              
                 $guard->korima = $request->korima;
                 $guard->observation = $request->observation;
-                if ($request->hasFile("picture") || !empty($request->observation)) {
+                if ($request->hasFile("picture")) {
                     $response = ObjResponse::CorrectResponse();
                     $response["message"] = 'Datos actualizados exitosamente';
                     $response["alert_text"] = "El registro se ha actualizado correctamente";
