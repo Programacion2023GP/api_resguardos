@@ -33,23 +33,32 @@ class ControllerKorima extends Controller
                 
                 // Construye la URL completa de la imagen
                 // $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
-                
+
                 // O si estás usando el dominio de producción
                 $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
                 
-                
-                // Almacena la observación en el modelo
-            }
-            $guard->korima = $request->korima;
-            $guard->observation = $request->observation;
-                // Guarda los datos en la base de datos
-                $guard->save();
 
+                // Almacena la observación en el modelo
+                
+
+                // Guarda los datos en la base de datos
+                
                 // Respuesta correcta
                 $response = ObjResponse::CorrectResponse();
                 $response["message"] = 'Archivo subido exitosamente';
                 $response["alert_text"] = "El archivo se ha subido correctamente";
-             
+            } 
+            $guard->korima = $request->korima;
+            $guard->observation = $request->observation;
+            if (!empty($request->korima) || !empty($request->observation)) {
+                $guard->save();
+            }
+            
+            
+            else {
+                // Si no se proporciona el archivo
+                $response = ObjResponse::CatchResponse("No se ha proporcionado ninguna imagen.");
+            }
         } catch (\Exception $ex) {
             // Manejo de errores y excepciones
             $response = ObjResponse::CatchResponse($ex->getMessage());
@@ -158,9 +167,18 @@ class ControllerKorima extends Controller
                 if ($request->filled('observation')) {
                     $guard->observation = $request->input('observation');
                 }
-
+                $guard->korima = $request->korima;
+                $guard->observation = $request->observation;
+                if (!empty($request->korima) || !empty($request->observation)) {
+                    $guard->update();                
+                }
+                
+                
+                else {
+                    // Si no se proporciona el archivo
+                    $response = ObjResponse::CatchResponse("No se ha proporcionado ninguna imagen.");
+                }
                 // Guarda los cambios en la base de datos
-                $guard->update();
 
                 // Respuesta correcta
                 $response = ObjResponse::CorrectResponse();

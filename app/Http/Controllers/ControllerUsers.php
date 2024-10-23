@@ -78,9 +78,9 @@ class ControllerUsers extends Controller
     {
         try {
           //  DB::table('personal_access_tokens')->where('tokenable_id', $id)->delete();
-          auth()->user()->tokens()->delete();
-
-           $response->data = ObjResponse::CorrectResponse();
+        //   auth()->user()->token()->delete();
+        Auth::user()->currentAccessToken()->delete();
+        $response->data = ObjResponse::CorrectResponse();
            $response->data["message"] = 'peticion satisfactoria | sesión cerrada.';
            $response->data["alert_title"] = "Bye!";
         } catch (\Exception $ex) {
