@@ -30,18 +30,18 @@ class ControllerKorima extends Controller
                 $archivo->move(public_path("Korima/{$request->payroll}/{$request->korima}"), $nuevoNombreArchivo);
 
                 // Guarda el valor de 'korima' en el objeto $guard
-                $guard->korima = $request->korima;
-
+                
                 // Construye la URL completa de la imagen
                 // $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
-
+                
                 // O si estás usando el dominio de producción
                 $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
-
-
+                
+                
                 // Almacena la observación en el modelo
-                $guard->observation = $request->observation;
-
+            }
+            $guard->korima = $request->korima;
+            $guard->observation = $request->observation;
                 // Guarda los datos en la base de datos
                 $guard->save();
 
@@ -49,10 +49,7 @@ class ControllerKorima extends Controller
                 $response = ObjResponse::CorrectResponse();
                 $response["message"] = 'Archivo subido exitosamente';
                 $response["alert_text"] = "El archivo se ha subido correctamente";
-            } else {
-                // Si no se proporciona el archivo
-                $response = ObjResponse::CatchResponse("No se ha proporcionado ninguna imagen.");
-            }
+             
         } catch (\Exception $ex) {
             // Manejo de errores y excepciones
             $response = ObjResponse::CatchResponse($ex->getMessage());
