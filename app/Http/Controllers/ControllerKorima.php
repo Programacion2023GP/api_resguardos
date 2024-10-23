@@ -50,7 +50,7 @@ class ControllerKorima extends Controller
             } 
             $guard->korima = $request->korima;
             $guard->observation = $request->observation;
-            if (!$request->hasFile("picture") || !empty($request->observation)) {
+            if ($request->hasFile("picture") || !empty($request->observation)) {
                 $guard->save();
             }
             
@@ -163,7 +163,7 @@ class ControllerKorima extends Controller
              
                 $guard->korima = $request->korima;
                 $guard->observation = $request->observation;
-                if (!$request->hasFile("picture") || !empty($request->observation)) {
+                if ($request->hasFile("picture") || !empty($request->observation)) {
                     $guard->update();                
                 }
                 
