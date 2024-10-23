@@ -160,13 +160,7 @@ class ControllerKorima extends Controller
                 }
 
                 // Verifica y actualiza los campos 'korima' y 'observation' si están presentes en la solicitud
-                if ($request->filled('korima')) {
-                    $guard->korima = $request->input('korima');
-                }
-
-                if ($request->filled('observation')) {
-                    $guard->observation = $request->input('observation');
-                }
+             
                 $guard->korima = $request->korima;
                 $guard->observation = $request->observation;
                 if (!empty($request->korima) || !empty($request->observation)) {
