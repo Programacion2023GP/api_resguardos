@@ -13,6 +13,7 @@ class Korima extends Model
     protected $fillable = [
         'id',
         'korima',
+        'tag_picture',
         'picture',
         'observation',
        

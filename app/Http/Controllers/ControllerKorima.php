@@ -32,10 +32,10 @@ class ControllerKorima extends Controller
                 // Guarda el valor de 'korima' en el objeto $guard
                 
                 // Construye la URL completa de la imagen
-                // $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                 // O si estás usando el dominio de producción
-                $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                // $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
                 
 
                 // Almacena la observación en el modelo
@@ -44,14 +44,36 @@ class ControllerKorima extends Controller
                 // Guarda los datos en la base de datos
                 
                 // Respuesta correcta
-                $response = ObjResponse::CorrectResponse();
-                $response["message"] = 'Archivo subido exitosamente';
-                $response["alert_text"] = "El archivo se ha subido correctamente";
+              
             } 
+            if ($request->hasFile("tag_picture")) {
+                $archivo = $request->file("tag_picture");
+
+                // Obtén el nombre original del archivo y genera un nuevo nombre
+                $nombreArchivo = $archivo->getClientOriginalName();
+                $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
+
+                // Mueve el archivo al directorio público
+                // Mueve el archivo a la ruta deseada
+                $archivo->move(public_path("Korima/{$request->payroll}/{$request->korima}"), $nuevoNombreArchivo);
+
+                // Guarda el valor de 'korima' en el objeto $guard
+
+                // Construye la URL completa de la imagen
+                $guard->tag_picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+
+                // O si estás usando el dominio de producción
+                // $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+
+            }
+
             $guard->korima = $request->korima;
             $guard->observation = $request->observation;
             if ($request->hasFile("picture") || $request->observation) {
                 $guard->save();
+                $response = ObjResponse::CorrectResponse();
+                $response["message"] = 'Archivo subido exitosamente';
+                $response["alert_text"] = "El archivo se ha subido correctamente";
             }
             
             
@@ -149,13 +171,32 @@ class ControllerKorima extends Controller
                     $archivo->move(public_path("Korima/{$request->payroll}/{$request->korima}"), $nuevoNombreArchivo);
 
                     // Guarda el valor de 'korima' en el objeto $guard
-                    $guard->korima = $request->korima;
 
                     // Construye la URL completa de la imagen
-                    // $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                    $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                     // O si estás usando el dominio de producción
-                    $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                    // $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+
+                }
+                if ($request->hasFile("tag_picture")) {
+                    $archivo = $request->file("tag_picture");
+
+                    // Obtén el nombre original del archivo y genera un nuevo nombre
+                    $nombreArchivo = $archivo->getClientOriginalName();
+                    $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
+
+                    // Mueve el archivo al directorio público
+                    // Mueve el archivo a la ruta deseada
+                    $archivo->move(public_path("Korima/{$request->payroll}/{$request->korima}"), $nuevoNombreArchivo);
+
+                    // Guarda el valor de 'korima' en el objeto $guard
+
+                    // Construye la URL completa de la imagen
+                    $guard->tag_picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+
+                    // O si estás usando el dominio de producción
+                    // $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                 }
 
