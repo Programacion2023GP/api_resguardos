@@ -69,7 +69,7 @@ class ControllerKorima extends Controller
 
             $guard->korima = $request->korima;
             $guard->observation = $request->observation;
-            if ($request->hasFile("picture") || $request->observation) {
+            if ($request->hasFile("picture") || $request->hasFile("tag_picture") || $request->observation) {
                 $guard->save();
                 $response = ObjResponse::CorrectResponse();
                 $response["message"] = 'Archivo subido exitosamente';
@@ -204,7 +204,7 @@ class ControllerKorima extends Controller
              
                 $guard->korima = $request->korima;
                 $guard->observation = $request->observation;
-                if ($request->hasFile("picture") || $request->observation) {
+                if ($request->hasFile("picture") || $request->hasFile("tag_picture") || $request->observation) {
                     $response = ObjResponse::CorrectResponse();
                     $response["message"] = 'Datos actualizados exitosamente';
                     $response["alert_text"] = "El registro se ha actualizado correctamente";
