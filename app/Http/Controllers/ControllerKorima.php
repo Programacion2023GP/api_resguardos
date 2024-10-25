@@ -32,10 +32,10 @@ class ControllerKorima extends Controller
                 // Guarda el valor de 'korima' en el objeto $guard
                 
                 // Construye la URL completa de la imagen
-                $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                // $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                 // O si estás usando el dominio de producción
-                // $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
                 
 
                 // Almacena la observación en el modelo
@@ -60,10 +60,10 @@ class ControllerKorima extends Controller
                 // Guarda el valor de 'korima' en el objeto $guard
 
                 // Construye la URL completa de la imagen
-                $guard->tag_picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                // $guard->tag_picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                 // O si estás usando el dominio de producción
-                // $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
             }
 
@@ -173,10 +173,10 @@ class ControllerKorima extends Controller
                     // Guarda el valor de 'korima' en el objeto $guard
 
                     // Construye la URL completa de la imagen
-                    $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                    // $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                     // O si estás usando el dominio de producción
-                    // $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                    $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                 }
                 if ($request->hasFile("tag_picture")) {
@@ -193,10 +193,10 @@ class ControllerKorima extends Controller
                     // Guarda el valor de 'korima' en el objeto $guard
 
                     // Construye la URL completa de la imagen
-                    $guard->tag_picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                    // $guard->tag_picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                     // O si estás usando el dominio de producción
-                    // $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                    $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                 }
 
