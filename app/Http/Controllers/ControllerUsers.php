@@ -329,6 +329,21 @@ public function user(Response $response, $id = null)
     }
     return response()->json($response, $response->data["status_code"]);
 }
+public function nomina(Response $response, $nomina = null)
+{
+    $response->data = ObjResponse::DefaultResponse();
+    try {
+        $list = User::where('payroll',$nomina);
+
+        $response->data = ObjResponse::CorrectResponse();
+        $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
+        $response->data["alert_text"] = "Usuarios encontrados";
+        $response->data["result"] = $list;
+    } catch (\Exception $ex) {
+        $response->data = ObjResponse::CatchResponse($ex->getMessage());
+    }
+    return response()->json($response, $response->data["status_code"]);
+}
 public function group(Response $response, $group = null, $id = null)
 {
     $response->data = ObjResponse::DefaultResponse();

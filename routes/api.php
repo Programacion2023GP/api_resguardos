@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/auth/logout', [ControllerUsers::class, 'logout']);
     //NOTE - USUARIOS
     Route::get('/user/{id}', [ControllerUsers::class, 'user']);
+    Route::get('/user/nomina/{nomina}', [ControllerUsers::class, 'nomina']);
 
     Route::get('/users/{role?}', [ControllerUsers::class, 'index']);
     Route::get('/reportsUsers', [ControllerUsers::class, 'reportsUsers']);
