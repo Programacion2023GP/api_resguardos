@@ -333,7 +333,7 @@ public function nomina(Response $response, $nomina = null)
 {
     $response->data = ObjResponse::DefaultResponse();
     try {
-        $list = User::where('payroll',$nomina);
+        $list = User::where('payroll', $nomina)->get();
 
         $response->data = ObjResponse::CorrectResponse();
         $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
