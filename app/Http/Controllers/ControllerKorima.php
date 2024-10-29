@@ -68,7 +68,7 @@ class ControllerKorima extends Controller
             }
 
             $guard->korima = $request->korima;
-            $guard->observation = $request->observation;
+            $guard->observation = $request->observation ?? $guard->observation;
             if ($request->hasFile("picture") || $request->hasFile("tag_picture") || $request->observation) {
                 $guard->save();
                 $response = ObjResponse::CorrectResponse();
@@ -203,7 +203,7 @@ class ControllerKorima extends Controller
                 // Verifica y actualiza los campos 'korima' y 'observation' si están presentes en la solicitud
              
                 $guard->korima = $request->korima;
-                $guard->observation = $request->observation;
+                $guard->observation = $request->observation ?? $guard->observation;
                 if ($request->hasFile("picture") || $request->hasFile("tag_picture") || $request->observation) {
                     $response = ObjResponse::CorrectResponse();
                     $response["message"] = 'Datos actualizados exitosamente';
