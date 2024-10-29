@@ -174,7 +174,8 @@ class ControllerUsers extends Controller
                 if ($role) {
                     $query = $query->where('users.role', $role);        
                     }
-                $query = $query->orderBy('role')->where('active', 1)->get();
+                // $query = $query->orderBy('role')->where('active', 1)->get();
+                $query = $query->distinct()->orderBy('role')->where('active', 1)->get();
 
              break;
              case 2:
@@ -197,8 +198,10 @@ class ControllerUsers extends Controller
                 if ($role) {
                     $query = $query->where('users.role', $role);        
                     }
-                $query = $query->orderBy('role')->where('active', 1)->get();
-             break;
+                // $query = $query->orderBy('role')->where('active', 1)->get();
+                $query = $query->distinct()->orderBy('role')->where('active', 1)->get();
+
+                break;
              case 3:
                 $userAuth = User::select('users.*',
                 DB::raw("CASE
@@ -242,7 +245,8 @@ class ControllerUsers extends Controller
                     });                    ;
                     
                 });
-                $query = $query->orderBy('users.role')->where('users.active', 1)->get();
+                $query = $query->distinct()->orderBy('role')->where('active', 1)->get();
+
                 $newResult = [];
                 foreach ($userAuth as $value) {
                     $modifiedValue = [
@@ -296,8 +300,9 @@ class ControllerUsers extends Controller
                 END as type_role")
                     );
                 $query->where('role', 5);
-                $query = $query->orderBy('role')->where('active', 1)->get();
-            
+                // $query = $query->orderBy('role')->where('active', 1)->get();
+                $query = $query->distinct()->orderBy('role')->where('active', 1)->get();
+
             break;
         }
     
