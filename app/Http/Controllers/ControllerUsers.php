@@ -573,7 +573,7 @@ class ControllerUsers extends Controller
                 ]);
 
             if ($affectedRows === 0) {
-                throw new \Exception('No se puede desactivar el resguardo asociado a un usuario activo.');
+                throw new \Exception('No se puede desactivar el usuario cuenta con resguardos.');
             }
 
 
