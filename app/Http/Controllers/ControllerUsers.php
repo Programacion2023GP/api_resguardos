@@ -243,6 +243,7 @@ class ControllerUsers extends Controller
                     //     });
                     //     $query = $query->orderBy('users.role')->where('users.active', 1)->get();
 
+                    $existingIds = []; // Array para almacenar los IDs ya procesados
 
                     $query = User::select(
                         'users.id',
@@ -277,7 +278,6 @@ class ControllerUsers extends Controller
                             });
                         })
                         ->where('users.active', 1)
-                        ->distinct() // Agrega DISTINCT aquí
                         ->orderBy('users.role')
                         ->get();
 
@@ -295,13 +295,13 @@ class ControllerUsers extends Controller
                         ];
 
                         $newResult[] = (object)$modifiedValue;
+                        $existingIds[] = $value->id; // Agrega el ID al array de IDs existentes
+
                     }
 
                     foreach ($query as $value) {
-                        if ($value->rol != null) {
-                            if ($value->rol < 4) {
-                                continue;
-                            }
+                        if (($value->rol !== null && $value->rol < 4) || in_array($value->id, $existingIds)) {
+                            continue;
                         }
                         if (Auth::user()->id == $value->id && $value->nombre == null) {
                             continue;
@@ -318,6 +318,8 @@ class ControllerUsers extends Controller
                         ];
 
                         $newResult[] = (object)$modifiedValue;
+                        $existingIds[] = $value->id; // Agrega el ID al array de IDs existentes
+
                     }
 
 
