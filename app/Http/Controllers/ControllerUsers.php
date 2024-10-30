@@ -213,73 +213,38 @@ class ControllerUsers extends Controller
 
 
 
-                    //     $query = User::select('users.*','usemp.id as identificador','usemp.name as nombre','usemp.payroll as nomina','usemp.email as correo',
-                    //     'usemp.active as activo','usemp.group as grupo','usemp.role as rol',
-                    // DB::raw("CASE
-                    //     WHEN users.role = 1 THEN 'Super Admin'
-                    //     WHEN users.role = 2 THEN 'Administrativo'
-                    //     WHEN users.role = 3 THEN 'Enlance'
-                    //     WHEN users.role = 4 THEN 'Empleado'
-                    // END as type_role")
+                        $query = User::select('users.*','usemp.id as identificador','usemp.name as nombre','usemp.payroll as nomina','usemp.email as correo',
+                        'usemp.active as activo','usemp.group as grupo','usemp.role as rol',
+                    DB::raw("CASE
+                        WHEN users.role = 1 THEN 'Super Admin'
+                        WHEN users.role = 2 THEN 'Administrativo'
+                        WHEN users.role = 3 THEN 'Enlance'
+                        WHEN users.role = 4 THEN 'Empleado'
+                    END as type_role")
 
-                    //         );
+                            );
 
 
-                    //     $query->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id')
-                    //     ->leftjoin('users as usemp', 'usemp.group', '=', 'groupsextuser.group');
-                    //     $query->where(function($q) {
-                    //         $q->where(function($q) {
-                    //             $q->whereIn('users.role', [4])
-                    //             // ->where('user_create', Auth::user()->id)
-                    //             ->where('users.group', Auth::user()->group);
-                    //         })->orWhere(function($q) {
-                    //             $q->where('users.role', 3)
-                    //                 ->where('users.id', Auth::user()->id);
-                    //         })->orWhere(function($q) {
-                    //             $q->where('groupsextuser.group', 'usemp.group');
-
-                    //         });                    ;
-
-                    //     });
-                    //     $query = $query->orderBy('users.role')->where('users.active', 1)->get();
-
-                    $existingIds = []; // Array para almacenar los IDs ya procesados
-
-                    $query = User::select(
-                        'users.id',
-                        'users.email',
-                        'users.role',
-                        'users.active',
-                        DB::raw("CASE
-        WHEN users.role = 1 THEN 'Super Admin'
-        WHEN users.role = 2 THEN 'Administrativo'
-        WHEN users.role = 3 THEN 'Enlance'
-        WHEN users.role = 4 THEN 'Empleado'
-    END as type_role"),
-                        'usemp.id as identificador',
-                        'usemp.name as nombre',
-                        'usemp.payroll as nomina',
-                        'usemp.email as correo',
-                        'usemp.active as activo',
-                        'usemp.group as grupo',
-                        'usemp.role as rol'
-                    )
-                        ->leftJoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id')
-                        ->leftJoin('users as usemp', 'usemp.group', '=', 'groupsextuser.group')
-                        ->where(function ($q) {
-                            $q->where(function ($q) {
+                        $query->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id')
+                        ->leftjoin('users as usemp', 'usemp.group', '=', 'groupsextuser.group');
+                        $query->where(function($q) {
+                            $q->where(function($q) {
                                 $q->whereIn('users.role', [4])
-                                    ->where('users.group', Auth::user()->group);
-                            })->orWhere(function ($q) {
+                                // ->where('user_create', Auth::user()->id)
+                                ->where('users.group', Auth::user()->group);
+                            })->orWhere(function($q) {
                                 $q->where('users.role', 3)
                                     ->where('users.id', Auth::user()->id);
-                            })->orWhere(function ($q) {
+                            })->orWhere(function($q) {
                                 $q->where('groupsextuser.group', 'usemp.group');
-                            });
-                        })
-                        ->where('users.active', 1)
-                        ->orderBy('users.role')
-                        ->get();
+
+                            });                    ;
+
+                        });
+                        $query = $query->orderBy('users.role')->where('users.active', 1)->get();
+
+
+                        $existingIds = []; // Array para almacenar los IDs ya procesados
 
                     $newResult = [];
                     foreach ($userAuth as $value) {
@@ -295,13 +260,14 @@ class ControllerUsers extends Controller
                         ];
 
                         $newResult[] = (object)$modifiedValue;
-                        $existingIds[] = $value->id; // Agrega el ID al array de IDs existentes
 
                     }
 
                     foreach ($query as $value) {
-                        if (($value->rol !== null && $value->rol < 4) || in_array($value->id, $existingIds)) {
-                            continue;
+                        if ($value->rol != null) {
+                            if ($value->rol < 4) {
+                                continue;
+                            }
                         }
                         if (Auth::user()->id == $value->id && $value->nombre == null) {
                             continue;
@@ -318,11 +284,14 @@ class ControllerUsers extends Controller
                         ];
 
                         $newResult[] = (object)$modifiedValue;
-                        $existingIds[] = $value->id; // Agrega el ID al array de IDs existentes
-
                     }
 
-
+                    $newResult = array_values(array_unique(array_map(function($item) {
+                        return serialize($item); // Convierte el objeto en string para que array_unique funcione
+                    }, $newResult)));
+                    
+                    // Convertir de nuevo cada string a objeto
+                    $newResult = array_map('unserialize', $newResult);
 
                     $query = $newResult;
                     break;
@@ -508,7 +477,12 @@ class ControllerUsers extends Controller
 
                             $newResult[] = (object)$modifiedValue;
                         }
-
+                        $newResult = array_values(array_unique(array_map(function($item) {
+                            return serialize($item); // Convierte el objeto en string para que array_unique funcione
+                        }, $newResult)));
+                        
+                        // Convertir de nuevo cada string a objeto
+                        $newResult = array_map('unserialize', $newResult);
 
 
                         $list = $newResult;
