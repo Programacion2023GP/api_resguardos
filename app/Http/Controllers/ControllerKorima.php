@@ -114,39 +114,7 @@ class ControllerKorima extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
-    public function destroy(int $id, Response $response)
-    {
-        $response->data = ObjResponse::DefaultResponse();
-        try {
-
-
-
-            $affectedRows = Korima::where('id', $id)
-                ->where(function ($query) use ($id) {
-                    $query->whereNotExists(function ($subquery) use ($id) {
-                        $subquery->select(DB::raw(1))
-                            ->from('guards')
-                            ->whereRaw('guards.state_id = Korima.id')
-                            ->where('state_id', $id);
-                    });
-                })
-                ->update([
-                    'active' => DB::raw('NOT active'),
-                ]);
-
-            if ($affectedRows === 0) {
-                throw new \Exception('No se puede eliminar tiene resguardos de este estado fisico.');
-            }
-
-
-            $response->data = ObjResponse::CorrectResponse();
-            $response->data["message"] = 'peticion satisfactoria | resguardo baja.';
-            $response->data["alert_text"] = 'resguardo baja';
-        } catch (\Exception $ex) {
-            $response->data = ObjResponse::CatchResponse($ex->getMessage());
-        }
-        return response()->json($response, $response->data["status_code"]);
-    }
+   
     public function update(Request $request)
     {
         $response = ObjResponse::DefaultResponse();
@@ -231,5 +199,45 @@ class ControllerKorima extends Controller
 
         // Devuelve la respuesta como JSON
         return response()->json($response, $response["status_code"]);
+    }
+    public function down(Request $request, Response $response)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+            $korima = Korima::find($request->id);
+           if ($korima) {
+               $korima->motive_down = $request->motive_down;
+               $korima->update();
+
+           }
+
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'peticion satisfactoria | resguardo activo dado de baja.';
+            $response->data["alert_text"] = 'resguardo activo dado de baja';
+
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
+    public function autorized(Request $request, Response $response)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+            $korima = Korima::find($request->id);
+           if ($korima) {
+               $korima->autorized = true;
+               $korima->update();
+
+           }
+
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'peticion satisfactoria | resguardo activo dado de baja.';
+            $response->data["alert_text"] = 'resguardo activo dado de baja';
+
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
     }
 }

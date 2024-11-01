@@ -90,6 +90,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/korima', [ControllerKorima::class, 'index']);
     Route::post('/korima', [ControllerKorima::class, 'create']);
     Route::post('/korima/update', [ControllerKorima::class, 'update']);
+    Route::post('/korima/down', [ControllerKorima::class, 'down']);
+    Route::post('/korima/autorized', [ControllerKorima::class, 'autorized']);
 
 });
 Route::post('/airlanesgroup/destroy/{id}', [ControllerAirlanesGroups::class, 'destroy']);
