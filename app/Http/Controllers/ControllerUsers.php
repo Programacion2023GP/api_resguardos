@@ -559,22 +559,25 @@ class ControllerUsers extends Controller
         $response->data = ObjResponse::DefaultResponse();
         try {
             $affectedRows = User::where('id', $id)
-                ->whereNotExists(function ($query) use ($id) {
-                    $query->select(DB::raw(1))
-                        ->from('user_guards')
-                        ->whereColumn('user_guards.user_id', 'users.id')
-                        ->where('user_guards.active', 1)
-                        ->orWhere('user_guards.expecting', 1)
-                        ->whereNull('user_guards.deleted_at');
-                })
-
-                ->update([
-                    'active' => DB::raw('NOT active'),
-                ]);
-
-            if ($affectedRows === 0) {
-                throw new \Exception('No se puede desactivar el usuario cuenta con resguardos.');
-            }
+            ->whereNotExists(function ($query) use ($id) {
+                $query->select(DB::raw(1))
+                    ->from('user_guards')
+                    ->whereColumn('user_guards.user_id', 'users.id')
+                    ->where(function ($query) {
+                        // Aseguramos que ambas condiciones sean evaluadas correctamente
+                        $query->where('user_guards.active', 1)
+                              ->orWhere('user_guards.expecting', 1);
+                    })
+                    ->whereNull('user_guards.deleted_at');
+            })
+            ->delete();
+        
+        // Verificamos si no se actualizó ninguna fila
+        if ($affectedRows === 0) {
+            // Lanzamos la excepción si no se pudo actualizar el usuario
+            throw new \Exception('No se puede desactivar el usuario, cuenta con resguardos activos o en espera.');
+        }
+        
 
 
             $response->data = ObjResponse::CorrectResponse();
