@@ -323,7 +323,19 @@ class ControllerUsers extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
+    public function allUsers(Response $response){
+        try {
+            $list = User::all();
 
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
+            $response->data["alert_text"] = "Usuarios encontrados";
+            $response->data["result"] = $list;
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
     public function user(Response $response, $id = null)
     {
         $response->data = ObjResponse::DefaultResponse();

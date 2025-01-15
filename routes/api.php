@@ -33,7 +33,9 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::get('/users/{role?}', [ControllerUsers::class, 'index']);
     Route::get('/reportsUsers', [ControllerUsers::class, 'reportsUsers']);
+    Route::get('/allUsers', [ControllerUsers::class, 'allUsers']);
 
+    
     Route::post('/usersdestroy/{id}', [ControllerUsers::class, 'destroy']);
     Route::post('/usersupdate', [ControllerUsers::class, 'update']);
     Route::get('/changeEnlance/{usuarioAntiguoId}/{usuarioNuevoId}/{correonuevo}', [ControllerUsers::class, 'changeEnlance']);
