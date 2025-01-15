@@ -282,7 +282,18 @@ class ControllerUsersGuards extends Controller
        $response->data = ObjResponse::DefaultResponse();
        try {
            $resultados = DB::select("
-           select guards.group as nombre,count(guards.group) as total from guards group by guards.group
+           SELECT 
+           users.group AS nombre,
+           COUNT(guards.group) AS total
+       FROM 
+           users
+       LEFT JOIN 
+           guards
+       ON 
+           users.group = guards.group
+       GROUP BY 
+           users.group;
+       
        
        ");
        ; // Cambiado a Map::all() para obtener todos los registros de la tabla Map 
