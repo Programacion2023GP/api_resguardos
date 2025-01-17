@@ -30,22 +30,22 @@ class ControllerKorima extends Controller
                 $archivo->move(public_path("Korima/{$request->payroll}/{$request->korima}"), $nuevoNombreArchivo);
 
                 // Guarda el valor de 'korima' en el objeto $guard
-                
+
                 // Construye la URL completa de la imagen
                 // $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                 // O si estás usando el dominio de producción
                 $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
-                
+
 
                 // Almacena la observación en el modelo
-                
+
 
                 // Guarda los datos en la base de datos
-                
+
                 // Respuesta correcta
-              
-            } 
+
+            }
             if ($request->hasFile("tag_picture")) {
                 $archivo = $request->file("tag_picture");
 
@@ -64,7 +64,6 @@ class ControllerKorima extends Controller
 
                 // O si estás usando el dominio de producción
                 $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
-
             }
 
             $guard->korima = $request->korima;
@@ -74,10 +73,7 @@ class ControllerKorima extends Controller
                 $response = ObjResponse::CorrectResponse();
                 $response["message"] = 'Archivo subido exitosamente';
                 $response["alert_text"] = "El archivo se ha subido correctamente";
-            }
-            
-            
-            else {
+            } else {
                 // Si no se proporciona el archivo
                 $response = ObjResponse::CatchResponse("No se ha proporcionado ninguna imagen.");
             }
@@ -114,7 +110,7 @@ class ControllerKorima extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
-   
+
     public function update(Request $request)
     {
         $response = ObjResponse::DefaultResponse();
@@ -145,7 +141,6 @@ class ControllerKorima extends Controller
 
                     // O si estás usando el dominio de producción
                     $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
-
                 }
                 if ($request->hasFile("tag_picture")) {
                     $archivo = $request->file("tag_picture");
@@ -165,11 +160,10 @@ class ControllerKorima extends Controller
 
                     // O si estás usando el dominio de producción
                     $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
-
                 }
 
                 // Verifica y actualiza los campos 'korima' y 'observation' si están presentes en la solicitud
-             
+
                 $guard->korima = $request->korima;
                 $guard->observation = $request->observation ?? $guard->observation;
                 if ($request->hasFile("picture") || $request->hasFile("tag_picture") || $request->observation) {
@@ -177,14 +171,8 @@ class ControllerKorima extends Controller
                     $response["message"] = 'Datos actualizados exitosamente';
                     $response["alert_text"] = "El registro se ha actualizado correctamente";
                     // Si al menos uno de los campos tiene un valor, actualiza el registro
-                     $guard->update();                
-                }
-          
-                
-                
-                
-                
-                else {
+                    $guard->update();
+                } else {
                     // Si no se proporciona el archivo
                     $response = ObjResponse::CatchResponse("No se ha proporcionado ninguna imagen.");
                 }
@@ -205,16 +193,19 @@ class ControllerKorima extends Controller
         $response->data = ObjResponse::DefaultResponse();
         try {
             $korima = Korima::find($request->id);
-           if ($korima) {
-               $korima->motive_down = $request->motive_down;
-               $korima->update();
-
-           }
+            if ($korima) {
+                $korima->motive_down = $request->motive_down;
+                $korima->update();
+            } else {
+                $korima = new Korima();
+                $korima->korima = $request->id;
+                $korima->motive_down = $request->motive_down;
+                $korima->save();
+            }
 
             $response->data = ObjResponse::CorrectResponse();
             $response->data["message"] = 'peticion satisfactoria | resguardo activo dado de baja.';
             $response->data["alert_text"] = 'resguardo activo dado de baja';
-
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());
         }
@@ -225,16 +216,14 @@ class ControllerKorima extends Controller
         $response->data = ObjResponse::DefaultResponse();
         try {
             $korima = Korima::find($request->id);
-           if ($korima) {
-               $korima->autorized = true;
-               $korima->update();
-
-           }
+            if ($korima) {
+                $korima->autorized = true;
+                $korima->update();
+            }
 
             $response->data = ObjResponse::CorrectResponse();
             $response->data["message"] = 'peticion satisfactoria | resguardo activo dado de baja.';
             $response->data["alert_text"] = 'resguardo activo dado de baja';
-
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());
         }
