@@ -218,6 +218,10 @@ class ControllerKorima extends Controller
             $korima = Korima::find($request->id);
             if ($korima) {
                 $korima->autorized = $request->option==1?true:null;
+                if ($request->option==0) {
+                    $korima->motive_down = null;
+
+                }
                 $korima->update();
             }
 
