@@ -198,7 +198,7 @@ class ControllerKorima extends Controller
                 $korima->update();
             } else {
                 $korima = new Korima();
-                $korima->korima = $request->id;
+                $korima->korima =$request->korima;
                 $korima->motive_down = $request->motive_down;
                 $korima->save();
             }
