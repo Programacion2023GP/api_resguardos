@@ -70,17 +70,51 @@ class ControllerUsersGuards extends Controller
         try {
             
 
-           $user= Users_guards::where('id', $id)
-           ->update([
+           $user= Users_guards::where('id', $id)->first();
+           
+           $user->update([
                'observation' => $request->observation,
                'expecting' => 1,
                'datedown' => date('Y-m-d'),
                //  'deleted_at' => date('Y-m-d H:i:s'),
             ]);
-            
+            Guards::where('id', $user->guards_id)
+           ->update([
+               'motive' => $request->observation,
+             
+               //  'deleted_at' => date('Y-m-d H:i:s'),
+            ]);
             $response->data = ObjResponse::CorrectResponse();
             $response->data["message"] = 'peticion satisfactoria | resguardo baja.';
             $response->data["alert_text"] ='resguardo baja';
+
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
+    public function canceldestroy(int $id, Response $response,Request $request)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+            
+
+           $user= Guards::where('id', $id)->first();
+           $user->update([
+              'motive' =>null,
+            
+              //  'deleted_at' => date('Y-m-d H:i:s'),
+           ]);
+         $as=Users_guards::where('guards_id', $id)->
+         update([
+               'observation' => null,
+               'expecting' => 0,
+               'datedown' => null,
+               //  'deleted_at' => date('Y-m-d H:i:s'),
+            ]);
+           $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'peticion satisfactoria | cancelación de la baja.';
+            $response->data["alert_text"] ='cancelación de la baja';
 
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());

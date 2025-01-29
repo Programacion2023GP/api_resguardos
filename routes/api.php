@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('/usersguards/create', [ControllerUsersGuards::class, 'create']);
         Route::get('/usersguards/guardsUser/{id}', [ControllerUsersGuards::class, 'guardsUser']);
         Route::post('/usersguards/guardsdestroy/{id}', [ControllerUsersGuards::class, 'destroy']);
+        Route::post('/guards/canceldestroy/{id}', [ControllerUsersGuards::class, 'canceldestroy']);
         Route::get('/guards/showOptions/{id}', [controllerGuards::class, 'showOptions']);
         Route::get('/guards/history/{id}', [ControllerUsersGuards::class, 'historyGuard']);
         Route::post('/auth/register', [ControllerUsers::class, 'signup']);
