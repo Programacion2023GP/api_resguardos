@@ -29,6 +29,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/auth/logout', [ControllerUsers::class, 'logout']);
     //NOTE - USUARIOS
     Route::get('/user/{id}', [ControllerUsers::class, 'user']);
+    Route::get('/userslist', [ControllerUsers::class, 'userlist']);
+
     Route::get('/user/nomina/{nomina}', [ControllerUsers::class, 'nomina']);
 
     Route::get('/users/{role?}', [ControllerUsers::class, 'index']);
@@ -46,6 +48,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/usersgroup/{group}/{id}', [ControllerUsers::class, 'group']);
 
     Route::post('/guardsdestroy/{id}', [controllerGuards::class, 'destroy']);
+    Route::post('/guardstransfer/{id}', [controllerGuards::class, 'transfer']);
+
     Route::get('/guardshabilited/{id}', [controllerGuards::class, 'habilited']);
 
     Route::post('/guards/update', [controllerGuards::class, 'update']);
@@ -94,6 +98,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/korima', [ControllerKorima::class, 'create']);
     Route::post('/korima/update', [ControllerKorima::class, 'update']);
     Route::post('/korima/down', [ControllerKorima::class, 'down']);
+    Route::post('/korima/transfer', [ControllerKorima::class, 'transfer']);
+
     Route::post('/korima/autorized', [ControllerKorima::class, 'autorized']);
 
 });

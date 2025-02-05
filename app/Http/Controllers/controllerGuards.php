@@ -151,7 +151,7 @@ class controllerGuards extends Controller
                 ->leftjoin('types', 'types.id', '=', 'guards.type_id')
                 ->leftjoin('states', 'states.id', '=', 'guards.state_id')
                 ->leftjoin('user_guards', 'user_guards.guards_id', '=', 'guards.id')
-                ->groupBy('guards.id', 'types.name', 'states.name','user_guards.active');
+                ->groupBy('guards.id', 'types.name', 'states.name', 'user_guards.active');
             switch (Auth::user()->role) {
                 case 1:
                     break;
@@ -176,38 +176,30 @@ class controllerGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
-    public function showOptions(Response $response, int $id)
-    {
+    public function showOptions(Response $response, int $id) {
         $response->data = ObjResponse::DefaultResponse();
         try {
             $user = User::find($id);
-
-
+    
+            if (!$user) {
+                throw new \Exception("Usuario no encontrado.");
+            }
+    
             $list = DB::table('guards')
                 ->select('guards.id', DB::raw('CONCAT(guards.stock_number, " ", guards.description) AS text'));
-
+    
             $userRole = Auth::user()->role;
             if ($userRole != 1 && $userRole != 2) {
                 $list = $list->where('guards.group', $user->group);
             }
-
+    
             $list = $list->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('user_guards')
                     ->whereColumn('user_guards.guards_id', 'guards.id')
                     ->where('user_guards.active', '=', 1);
-            })
-                ->get();
-
-
-
-
-
-
-
-
-
-
+            })->get();
+    
             $response->data = ObjResponse::CorrectResponse();
             $response->data["message"] = 'Petición satisfactoria | lista de usuarios.';
             $response->data["alert_text"] = "Usuarios encontrados";
@@ -215,8 +207,10 @@ class controllerGuards extends Controller
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());
         }
+    
         return response()->json($response, $response->data["status_code"]);
     }
+    
 
     public function indexall(Response $response)
     {
@@ -297,25 +291,53 @@ class controllerGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
+    public function transfer(int $id, Response $response, Request $request)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+            // Primero, obtenemos el estado actual del guardia
+            // $currentActiveStatus = DB::table('guards')->where('id', $request->id)->value('active');
+            $user = DB::table('users')->where('id', $id)->first();
+            // Si el estado actual es 0, simplemente lo cambiamos a 1
+                $affectedRows = DB::table('guards')
+                    ->where('id', $request->id)
+                    ->update(['motive' => 'transferencia de resguardo a ' . $user->name]);
+                    $affectedRows = DB::table('user_guards')
+                    ->where('guards_id', $request->id)
+                    ->update(['expecting' => 1,]);
+                if ($affectedRows === 0) {
+                    throw new \Exception('No se pudo transferir el resguardo.');
+                }
 
+                $response->data = ObjResponse::CorrectResponse();
+                $response->data["message"] = 'Petición satisfactoria | resguardo activado.';
+                $response->data["alert_text"] = 'Resguardo activado';
+            
+                // Si el estado actual es 1, realizamos la lógica original
+              
+            
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
     public function habilited(int $id, Response $response, Request $request)
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
             // Primero, obtenemos el estado actual del guardia
-        
+
             // Si el estado actual es 0, simplemente lo cambiamos a 1
-                DB::table('user_guards')
-                    ->where('user_guards.guards_id', $id)
-                    ->update([
-                        'user_guards.active' => 0,
-                        'user_guards.expecting' => 0
-                    ]);
-        
-                $response->data = ObjResponse::CorrectResponse();
-                $response->data["message"] = 'Petición satisfactoria | resguardo regresado al stock.';
-                $response->data["alert_text"] = 'Resguardo regresado al stock';
-            
+            DB::table('user_guards')
+                ->where('user_guards.guards_id', $id)
+                ->update([
+                    'user_guards.active' => 0,
+                    'user_guards.expecting' => 0
+                ]);
+
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'Petición satisfactoria | resguardo regresado al stock.';
+            $response->data["alert_text"] = 'Resguardo regresado al stock';
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());
         }

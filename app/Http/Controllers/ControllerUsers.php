@@ -171,7 +171,7 @@ class ControllerUsers extends Controller
                     if ($role) {
                         $query = $query->where('users.role', $role);
                     }
-                    $query = $query->orderBy('role')->where('active', 1)->get();
+                    $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
 
                     break;
                 case 2:
@@ -195,7 +195,7 @@ class ControllerUsers extends Controller
                     if ($role) {
                         $query = $query->where('users.role', $role);
                     }
-                    $query = $query->orderBy('role')->where('active', 1)->get();
+                    $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
                     break;
                 case 3:
                     $userAuth = User::select(
@@ -206,9 +206,10 @@ class ControllerUsers extends Controller
                     WHEN users.role = 3 THEN 'Enlance'
                     WHEN users.role = 4 THEN 'Empleado'
                 END as type_role")
-                    )->orderBy('role')->where('active', 1)->where('users.id', Auth::user()->id)->get();
+                    )->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
 
 
+                    
 
 
 
@@ -241,8 +242,7 @@ class ControllerUsers extends Controller
                             });                    ;
 
                         });
-                        $query = $query->orderBy('users.role')->where('users.active', 1)->get();
-
+                        $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
 
                         $existingIds = []; // Array para almacenar los IDs ya procesados
 
@@ -306,8 +306,7 @@ class ControllerUsers extends Controller
                 END as type_role")
                     );
                     $query->where('role', 5);
-                    $query = $query->orderBy('role')->where('active', 1)->get();
-
+                    $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
                     break;
             }
 
@@ -341,6 +340,21 @@ class ControllerUsers extends Controller
         $response->data = ObjResponse::DefaultResponse();
         try {
             $list = User::find($id);
+
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
+            $response->data["alert_text"] = "Usuarios encontrados";
+            $response->data["result"] = $list;
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
+    public function userlist(Response $response, $id = null)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+            $list = User::whereIn('role',[3,4])->get();
 
             $response->data = ObjResponse::CorrectResponse();
             $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';

@@ -16,6 +16,8 @@ class Korima extends Model
         'tag_picture',
         'picture',
         'observation',
-       
+        'motive_down',
+        'user_id',
+       'trauser_id',
     ];
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guards;
+use App\Models\Korima;
 use Illuminate\Http\Request;
 use App\Models\ObjResponse;
 use App\Models\Users_guards;
@@ -70,7 +71,7 @@ class ControllerUsersGuards extends Controller
         try {
             
 
-           $user= Users_guards::where('id', $id)->first();
+           $user= Korima::where('id', $id)->first();
            
            $user->update([
                'observation' => $request->observation,

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Korima;
 use App\Models\ObjResponse;
+use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ControllerKorima extends Controller
 {
@@ -211,6 +213,39 @@ class ControllerKorima extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
+    public function transfer(Request $request, Response $response)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        $user=User::where('id', $request->value)->first();
+        try {
+            $korima = Korima::find($request->id);
+            if ($korima) {
+             $korima->trauser_id = $user->name;
+             $korima->motive_down ='transferencia de resguardo a ' . $user->name;
+             $korima->user_id = $request->name;
+             
+
+             
+            $korima->update();
+            }
+            else{
+                $korima = new Korima();
+                $korima->korima =$request->NumeroEconomicoKorima;
+                $korima->trauser_id = $user->name;
+                $korima->motive_down ='transferencia de resguardo a ' . $user->name;
+                $korima->user_id = $request->name;
+
+                $korima->save();
+            }
+
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'peticion satisfactoria | transferencia.';
+            $response->data["alert_text"] = 'transferencia';
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
     public function autorized(Request $request, Response $response)
     {
         $response->data = ObjResponse::DefaultResponse();
@@ -220,6 +255,7 @@ class ControllerKorima extends Controller
                 $korima->autorized = $request->option==1?true:null;
                 if ($request->option==0) {
                     $korima->motive_down = null;
+                    $korima->trauser_id = null;
 
                 }
                 $korima->update();
