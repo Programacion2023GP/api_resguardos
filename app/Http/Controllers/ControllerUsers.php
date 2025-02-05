@@ -150,6 +150,182 @@ class ControllerUsers extends Controller
         return response()->json($response, $response->data["status_code"]);
     }
 
+    // public function index(Response $response, $role = null)
+    // {
+    //     $response->data = ObjResponse::DefaultResponse();
+    //     try {
+    //         $query = null;;
+
+
+    //         switch (Auth::user()->role) {
+    //             case 1:
+    //                 $query = User::select(
+    //                     'users.*',
+    //                     DB::raw("CASE
+    //                 WHEN users.role = 1 THEN 'Super Admin'
+    //                 WHEN users.role = 2 THEN 'Administrativo'
+    //                 WHEN users.role = 3 THEN 'Enlance'
+    //                 WHEN users.role = 4 THEN 'Empleado'
+    //             END as type_role")
+    //                 );
+    //                 if ($role) {
+    //                     $query = $query->where('users.role', $role);
+    //                 }
+    //                 $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
+
+    //                 break;
+    //             case 2:
+    //                 $query = User::select(
+    //                     'users.*',
+    //                     DB::raw("CASE
+    //             WHEN users.role = 1 THEN 'Super Admin'
+    //             WHEN users.role = 2 THEN 'Administrativo'
+    //             WHEN users.role = 3 THEN 'Enlance'
+    //             WHEN users.role = 4 THEN 'Empleado'
+    //         END as type_role")
+    //                 );
+    //                 $query->where(function ($q) {
+    //                     $q->where(function ($q) {
+    //                         $q->whereIn('role', [3, 4]);
+    //                     })->orWhere(function ($q) {
+    //                         $q->where('role', 2)
+    //                             ->where('id', Auth::user()->id);
+    //                     });
+    //                 });
+    //                 if ($role) {
+    //                     $query = $query->where('users.role', $role);
+    //                 }
+    //                 $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
+    //                 break;
+    //             case 3:
+    //                 $userAuth = User::select(
+    //                     'users.*',
+    //                     DB::raw("CASE
+    //                 WHEN users.role = 1 THEN 'Super Admin'
+    //                 WHEN users.role = 2 THEN 'Administrativo'
+    //                 WHEN users.role = 3 THEN 'Enlance'
+    //                 WHEN users.role = 4 THEN 'Empleado'
+    //             END as type_role")
+    //                 )->orderBy('role')->where('active', 1)->get();
+
+
+
+
+
+
+
+    //                 $query = User::select(
+    //                     'users.*',
+    //                     'usemp.id as identificador',
+    //                     'usemp.name as nombre',
+    //                     'usemp.payroll as nomina',
+    //                     'usemp.email as correo',
+    //                     'usemp.active as activo',
+    //                     'usemp.group as grupo',
+    //                     'usemp.role as rol',
+    //                     DB::raw("CASE
+    //                     WHEN users.role = 1 THEN 'Super Admin'
+    //                     WHEN users.role = 2 THEN 'Administrativo'
+    //                     WHEN users.role = 3 THEN 'Enlance'
+    //                     WHEN users.role = 4 THEN 'Empleado'
+    //                 END as type_role")
+
+    //                 );
+
+
+    //                 $query->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id')
+    //                     ->leftjoin('users as usemp', 'usemp.group', '=', 'groupsextuser.group');
+    //                 $query->where(function ($q) {
+    //                     $q->where(function ($q) {
+    //                         $q->whereIn('users.role', [4])
+    //                             // ->where('user_create', Auth::user()->id)
+    //                             ->where('users.group', Auth::user()->group);
+    //                     })->orWhere(function ($q) {
+    //                         $q->where('users.role', 3)
+    //                             ->where('users.id', Auth::user()->id);
+    //                     })->orWhere(function ($q) {
+    //                         $q->where('groupsextuser.group', 'usemp.group');
+    //                     });;
+    //                 });
+    //                 $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
+
+    //                 $existingIds = []; // Array para almacenar los IDs ya procesados
+
+    //                 $newResult = [];
+    //                 foreach ($userAuth as $value) {
+    //                     $modifiedValue = [
+    //                         'id' =>  $value->id,
+    //                         'email' =>  $value->email,
+    //                         'payroll' =>  $value->payroll,
+    //                         'name' =>  $value->name,
+    //                         'group' =>  $value->group,
+    //                         'role' => $value->role,
+    //                         'active' => $value->active,
+    //                         'type_role' => $value->type_role,
+    //                     ];
+
+    //                     $newResult[] = (object)$modifiedValue;
+    //                 }
+
+    //                 foreach ($query as $value) {
+    //                     if ($value->rol != null) {
+    //                         if ($value->rol < 4) {
+    //                             continue;
+    //                         }
+    //                     }
+    //                     if (Auth::user()->id == $value->id && $value->nombre == null) {
+    //                         continue;
+    //                     }
+    //                     $modifiedValue = [
+    //                         'id' => $value->nombre == null ? $value->id : $value->identificador,
+    //                         'email' => $value->nombre == null ? $value->email : $value->correo,
+    //                         'payroll' => $value->nombre == null ? $value->payroll : $value->nomina,
+    //                         'name' => $value->nombre == null ? $value->name : $value->nombre,
+    //                         'group' => $value->nombre == null ? $value->group : $value->grupo,
+    //                         'role' => $value->nombre == null ? $value->role : 4,
+    //                         'active' => $value->nombre == null ? $value->active : $value->activo,
+    //                         'type_role' => $value->nombre == null ? $value->type_role : 'Empleado',
+    //                     ];
+
+    //                     $newResult[] = (object)$modifiedValue;
+    //                 }
+
+    //                 $newResult = array_values(array_unique(array_map(function ($item) {
+    //                     return serialize($item); // Convierte el objeto en string para que array_unique funcione
+    //                 }, $newResult)));
+
+    //                 // Convertir de nuevo cada string a objeto
+    //                 $newResult = array_map('unserialize', $newResult);
+
+    //                 $query = $newResult;
+    //                 break;
+    //             case 4:
+    //                 $query = User::select(
+    //                     'users.*',
+    //                     DB::raw("CASE
+    //                 WHEN users.role = 1 THEN 'Super Admin'
+    //                 WHEN users.role = 2 THEN 'Administrativo'
+    //                 WHEN users.role = 3 THEN 'Enlance'
+    //                 WHEN users.role = 4 THEN 'Empleado'
+    //             END as type_role")
+    //                 );
+    //                 $query->where('role', 5);
+    //                 $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
+    //                 break;
+    //         }
+
+
+
+
+    //         $response->data = ObjResponse::CorrectResponse();
+    //         $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
+    //         $response->data["alert_text"] = "Usuarios encontrados";
+    //         $response->data["result"] = $query;
+    //     } catch (\Exception $ex) {
+    //         $response->data = ObjResponse::CatchResponse($ex->getMessage());
+    //     }
+    //     return response()->json($response, $response->data["status_code"]);
+    // }
     public function index(Response $response, $role = null)
     {
         $response->data = ObjResponse::DefaultResponse();
@@ -171,7 +347,7 @@ class ControllerUsers extends Controller
                     if ($role) {
                         $query = $query->where('users.role', $role);
                     }
-                    $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
+                    $query = $query->orderBy('role')->where('active', 1)->get();
 
                     break;
                 case 2:
@@ -195,7 +371,7 @@ class ControllerUsers extends Controller
                     if ($role) {
                         $query = $query->where('users.role', $role);
                     }
-                    $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
+                    $query = $query->orderBy('role')->where('active', 1)->get();
                     break;
                 case 3:
                     $userAuth = User::select(
@@ -206,10 +382,9 @@ class ControllerUsers extends Controller
                     WHEN users.role = 3 THEN 'Enlance'
                     WHEN users.role = 4 THEN 'Empleado'
                 END as type_role")
-                    )->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
+                    )->orderBy('role')->where('active', 1)->where('users.id', Auth::user()->id)->get();
 
 
-                    
 
 
 
@@ -242,7 +417,8 @@ class ControllerUsers extends Controller
                             });                    ;
 
                         });
-                        $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
+                        $query = $query->orderBy('users.role')->where('users.active', 1)->get();
+
 
                         $existingIds = []; // Array para almacenar los IDs ya procesados
 
@@ -289,7 +465,7 @@ class ControllerUsers extends Controller
                     $newResult = array_values(array_unique(array_map(function($item) {
                         return serialize($item); // Convierte el objeto en string para que array_unique funcione
                     }, $newResult)));
-                    
+
                     // Convertir de nuevo cada string a objeto
                     $newResult = array_map('unserialize', $newResult);
 
@@ -306,7 +482,8 @@ class ControllerUsers extends Controller
                 END as type_role")
                     );
                     $query->where('role', 5);
-                    $query = $query->orderBy('id', 'desc')->orderBy('role')->where('active', 1)->get();
+                    $query = $query->orderBy('role')->where('active', 1)->get();
+
                     break;
             }
 
@@ -322,7 +499,8 @@ class ControllerUsers extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
-    public function allUsers(Response $response){
+    public function allUsers(Response $response)
+    {
         try {
             $list = User::all();
 
@@ -354,7 +532,7 @@ class ControllerUsers extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $list = User::whereIn('role',[3,4])->get();
+            $list = User::whereIn('role', [3, 4])->get();
 
             $response->data = ObjResponse::CorrectResponse();
             $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
@@ -503,10 +681,10 @@ class ControllerUsers extends Controller
 
                             $newResult[] = (object)$modifiedValue;
                         }
-                        $newResult = array_values(array_unique(array_map(function($item) {
+                        $newResult = array_values(array_unique(array_map(function ($item) {
                             return serialize($item); // Convierte el objeto en string para que array_unique funcione
                         }, $newResult)));
-                        
+
                         // Convertir de nuevo cada string a objeto
                         $newResult = array_map('unserialize', $newResult);
 
@@ -585,25 +763,25 @@ class ControllerUsers extends Controller
         $response->data = ObjResponse::DefaultResponse();
         try {
             $affectedRows = User::where('id', $id)
-            ->whereNotExists(function ($query) use ($id) {
-                $query->select(DB::raw(1))
-                    ->from('user_guards')
-                    ->whereColumn('user_guards.user_id', 'users.id')
-                    ->where(function ($query) {
-                        // Aseguramos que ambas condiciones sean evaluadas correctamente
-                        $query->where('user_guards.active', 1)
-                              ->orWhere('user_guards.expecting', 1);
-                    })
-                    ->whereNull('user_guards.deleted_at');
-            })
-            ->delete();
-        
-        // Verificamos si no se actualizó ninguna fila
-        if ($affectedRows === 0) {
-            // Lanzamos la excepción si no se pudo actualizar el usuario
-            throw new \Exception('No se puede desactivar el usuario, cuenta con resguardos activos o en espera.');
-        }
-        
+                ->whereNotExists(function ($query) use ($id) {
+                    $query->select(DB::raw(1))
+                        ->from('user_guards')
+                        ->whereColumn('user_guards.user_id', 'users.id')
+                        ->where(function ($query) {
+                            // Aseguramos que ambas condiciones sean evaluadas correctamente
+                            $query->where('user_guards.active', 1)
+                                ->orWhere('user_guards.expecting', 1);
+                        })
+                        ->whereNull('user_guards.deleted_at');
+                })
+                ->delete();
+
+            // Verificamos si no se actualizó ninguna fila
+            if ($affectedRows === 0) {
+                // Lanzamos la excepción si no se pudo actualizar el usuario
+                throw new \Exception('No se puede desactivar el usuario, cuenta con resguardos activos o en espera.');
+            }
+
 
 
             $response->data = ObjResponse::CorrectResponse();
