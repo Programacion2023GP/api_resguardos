@@ -16,6 +16,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class ControllerUsers extends Controller
@@ -34,7 +35,26 @@ class ControllerUsers extends Controller
         $socket->close();
         return response()->json(['status' => 'Mensaje recibido en Laravel']);
     }
-
+    public function changepassword(Request $request, Response $response)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+            $user = User::find(Auth::user()->id);
+            if ($user) {
+                $user->update([
+                    'password' => Hash::make($request->password),
+                ]);
+                $response->data = ObjResponse::CorrectResponse();
+                $response->data["message"] = 'Contraseña cambiada';
+            } else {
+                throw new \Exception('No se encontró el usuario.');
+            }
+        } catch (\Exception $ex) {
+            Log::error('Error al cambiar la contraseña: ', [$ex->getMessage()]);
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
 
     public function login(Request $request, Response $response)
     {
@@ -389,38 +409,43 @@ class ControllerUsers extends Controller
 
 
 
-                        $query = User::select('users.*','usemp.id as identificador','usemp.name as nombre','usemp.payroll as nomina','usemp.email as correo',
-                        'usemp.active as activo','usemp.group as grupo','usemp.role as rol',
-                    DB::raw("CASE
+                    $query = User::select(
+                        'users.*',
+                        'usemp.id as identificador',
+                        'usemp.name as nombre',
+                        'usemp.payroll as nomina',
+                        'usemp.email as correo',
+                        'usemp.active as activo',
+                        'usemp.group as grupo',
+                        'usemp.role as rol',
+                        DB::raw("CASE
                         WHEN users.role = 1 THEN 'Super Admin'
                         WHEN users.role = 2 THEN 'Administrativo'
                         WHEN users.role = 3 THEN 'Enlance'
                         WHEN users.role = 4 THEN 'Empleado'
                     END as type_role")
 
-                            );
+                    );
 
 
-                        $query->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id')
+                    $query->leftjoin('groupsextuser', 'groupsextuser.user_id', '=', 'users.id')
                         ->leftjoin('users as usemp', 'usemp.group', '=', 'groupsextuser.group');
-                        $query->where(function($q) {
-                            $q->where(function($q) {
-                                $q->whereIn('users.role', [4])
+                    $query->where(function ($q) {
+                        $q->where(function ($q) {
+                            $q->whereIn('users.role', [4])
                                 // ->where('user_create', Auth::user()->id)
                                 ->where('users.group', Auth::user()->group);
-                            })->orWhere(function($q) {
-                                $q->where('users.role', 3)
-                                    ->where('users.id', Auth::user()->id);
-                            })->orWhere(function($q) {
-                                $q->where('groupsextuser.group', 'usemp.group');
-
-                            });                    ;
-
-                        });
-                        $query = $query->orderBy('users.role')->where('users.active', 1)->get();
+                        })->orWhere(function ($q) {
+                            $q->where('users.role', 3)
+                                ->where('users.id', Auth::user()->id);
+                        })->orWhere(function ($q) {
+                            $q->where('groupsextuser.group', 'usemp.group');
+                        });;
+                    });
+                    $query = $query->orderBy('users.role')->where('users.active', 1)->get();
 
 
-                        $existingIds = []; // Array para almacenar los IDs ya procesados
+                    $existingIds = []; // Array para almacenar los IDs ya procesados
 
                     $newResult = [];
                     foreach ($userAuth as $value) {
@@ -436,7 +461,6 @@ class ControllerUsers extends Controller
                         ];
 
                         $newResult[] = (object)$modifiedValue;
-
                     }
 
                     foreach ($query as $value) {
@@ -462,7 +486,7 @@ class ControllerUsers extends Controller
                         $newResult[] = (object)$modifiedValue;
                     }
 
-                    $newResult = array_values(array_unique(array_map(function($item) {
+                    $newResult = array_values(array_unique(array_map(function ($item) {
                         return serialize($item); // Convierte el objeto en string para que array_unique funcione
                     }, $newResult)));
 

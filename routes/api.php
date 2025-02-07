@@ -34,6 +34,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user/nomina/{nomina}', [ControllerUsers::class, 'nomina']);
 
     Route::get('/users/{role?}', [ControllerUsers::class, 'index']);
+    Route::post('/users/changepassword', [ControllerUsers::class, 'changepassword']);
+
     Route::get('/reportsUsers', [ControllerUsers::class, 'reportsUsers']);
     Route::get('/allUsers', [ControllerUsers::class, 'allUsers']);
 
@@ -92,6 +94,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/airlanes/update', [ControllerAirlanes::class, 'update']);
     
     Route::post('/airlanesgroup', [ControllerAirlanesGroups::class, 'create']);
+
     Route::get('/airlanesgroup/{id}', [ControllerAirlanesGroups::class, 'index']);
     
     Route::get('/korima', [ControllerKorima::class, 'index']);
