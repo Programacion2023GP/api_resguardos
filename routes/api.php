@@ -9,6 +9,7 @@ use App\Http\Controllers\ControllerUsers;
 use App\Http\Controllers\controllerGuards;
 use App\Http\Controllers\ControllerKorima;
 use App\Http\Controllers\ControllerStates;
+use App\Http\Controllers\ControllerStock;
 use App\Http\Controllers\ControllerTypes;
 use App\Http\Controllers\ControllerUsersGuards;
 
@@ -104,7 +105,13 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/korima/transfer', [ControllerKorima::class, 'transfer']);
 
     Route::post('/korima/autorized', [ControllerKorima::class, 'autorized']);
+    Route::prefix('stock')->group(function () {
+        Route::post('/register', [ControllerStock::class, 'create']);
+        Route::get('/list', [ControllerStock::class, 'index']);
+        Route::post('/update', [ControllerStock::class, 'update']);
+        Route::post('/destroy/{id}', [ControllerStock::class, 'destroy']);
 
+    });
 });
 Route::post('/airlanesgroup/destroy/{id}', [ControllerAirlanesGroups::class, 'destroy']);
 Route::get('/guards/infoguard/{id}', [ControllerUsersGuards::class, 'infoGuard']);
