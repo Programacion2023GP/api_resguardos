@@ -258,6 +258,7 @@ class ControllerKorima extends Controller
                 if ($request->option==0) {
                     $korima->motive_down = null;
                     $korima->trauser_id = null;
+                    $korima->motivetransfer = null;
 
                 }
                 $korima->update();
