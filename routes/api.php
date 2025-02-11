@@ -35,6 +35,9 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user/nomina/{nomina}', [ControllerUsers::class, 'nomina']);
 
     Route::get('/users/{role?}', [ControllerUsers::class, 'index']);
+    Route::post('/users/firmas', [ControllerUsers::class, 'firmas']);
+
+    
     Route::post('/users/changepassword', [ControllerUsers::class, 'changepassword']);
 
     Route::get('/reportsUsers', [ControllerUsers::class, 'reportsUsers']);

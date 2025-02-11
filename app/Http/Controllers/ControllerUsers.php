@@ -523,6 +523,20 @@ class ControllerUsers extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
+    public function firmas(Response $response, Request $request)
+    {
+        try {
+           $firma = DB::table('employees')->where('department',$request->group)->first();
+
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'Petición satisfactoria | Lista de usuarios.';
+            $response->data["alert_text"] = "Usuarios encontrados";
+            $response->data["result"] = $firma;
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
     public function allUsers(Response $response)
     {
         try {
