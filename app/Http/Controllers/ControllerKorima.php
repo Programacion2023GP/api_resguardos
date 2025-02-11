@@ -224,6 +224,7 @@ class ControllerKorima extends Controller
              $korima->motive_down ='transferencia de resguardo a ' . $user->name;
              $korima->user_id = $request->name;
              
+             $korima->motivetransfer = $request->motivetransfer;
 
              
             $korima->update();
@@ -234,6 +235,7 @@ class ControllerKorima extends Controller
                 $korima->trauser_id = $user->name;
                 $korima->motive_down ='transferencia de resguardo a ' . $user->name;
                 $korima->user_id = $request->name;
+                $korima->motivetransfer = $request->motivetransfer;
 
                 $korima->save();
             }
