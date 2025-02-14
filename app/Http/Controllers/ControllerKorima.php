@@ -37,7 +37,7 @@ class ControllerKorima extends Controller
                 // $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                 // O si estás usando el dominio de producción
-                $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                // $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
 
                 // Almacena la observación en el modelo
@@ -65,10 +65,12 @@ class ControllerKorima extends Controller
                 // $guard->tag_picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
 
                 // O si estás usando el dominio de producción
-                $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
+                // $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
             }
 
             $guard->korima = $request->korima;
+            $guard->motivetransfer = Null;
+
             $guard->observation = $request->observation ?? $guard->observation;
             if ($request->hasFile("picture") || $request->hasFile("tag_picture") || $request->observation) {
                 $guard->save();
