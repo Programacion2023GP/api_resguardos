@@ -29,8 +29,13 @@ class controllerGuards extends Controller
 
                 $nombreArchivo = $archivo->getClientOriginalName();
                 $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
-                $archivo->move(public_path("Resguardos/"), $nuevoNombreArchivo);
-                $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public" . "/Resguardos/" . $nuevoNombreArchivo;
+                $archivo->move(public_path("Resguardos"), $nuevoNombreArchivo);
+                // $guard->picture = asset("Resguardos/" . $nuevoNombreArchivo);
+                // $guard->picture = url("storage/Resguardos/{$nuevoNombreArchivo}");
+                $archivo->storeAs("public/Resguardos", $nuevoNombreArchivo);
+                $guard->picture = url("storage/Resguardos/{$nuevoNombreArchivo}");
+                // $archivo->move(public_path("Resguardos/"), $nuevoNombreArchivo);
+                // $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public" . "/Resguardos/" . $nuevoNombreArchivo;
                 // $guard->picture = "https://api-imm.gomezconnect.com"."/Resguardos/".$nuevoNombreArchivo;
 
             }
@@ -97,8 +102,11 @@ class controllerGuards extends Controller
 
                 $nombreArchivo = $archivo->getClientOriginalName();
                 $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
-                $archivo->move(public_path("Resguardos/"), $nuevoNombreArchivo);
-                $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public" . "/Resguardos/" . $nuevoNombreArchivo;
+                // $archivo->move(public_path("Resguardos/"), $nuevoNombreArchivo);
+                $archivo->storeAs("public/Resguardos", $nuevoNombreArchivo);
+                $guard->picture = url("storage/Resguardos/{$nuevoNombreArchivo}");
+
+                // $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public" . "/Resguardos/" . $nuevoNombreArchivo;
 
                 // $guard->picture = "https://api-imm.gomezconnect.com"."/Resguardos/".$nuevoNombreArchivo;
             }

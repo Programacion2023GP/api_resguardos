@@ -29,17 +29,18 @@ class ControllerStock extends Controller
             }
 
             // Asegura que la carpeta Stock/ existe
-            $path = public_path('Stock/');
-            if (!file_exists($path)) {
-                mkdir($path, 0777, true);
+            $path = 'public/Stock'; // El directorio dentro de storage/app/public
+            if (!file_exists(storage_path($path))) {
+                mkdir(storage_path($path), 0777, true);
             }
-
-            // Guarda el archivo con un nombre único
+            
+            // Guarda el archivo con un nombre único utilizando storeAs
             $nombreArchivo = date('Y-m-d_H-i-s') . '_' . $archivo->getClientOriginalName();
-            $archivo->move($path, $nombreArchivo);
-
-            // Guarda la ruta accesible en la base de datos
-            $guard->picture = asset("Stock/" . $nombreArchivo);
+            $archivo->storeAs($path, $nombreArchivo);
+            
+            // Guarda la URL accesible en la base de datos usando 'storage/'
+            $guard->picture = url("storage/Stock/{$nombreArchivo}");
+            
         }
 
         // Obtener el último stock_number y generar el nuevo
@@ -114,11 +115,16 @@ class ControllerStock extends Controller
 
                 $archivo = $request->file("picture");
 
+                // Genera el nombre único para el archivo
                 $nombreArchivo = $archivo->getClientOriginalName();
                 $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
-                $archivo->move(public_path("Resguardos/"), $nuevoNombreArchivo);
-                $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public" . "/Resguardos/" . $nuevoNombreArchivo;
-
+                
+                // Usa storeAs() para guardar el archivo en storage/app/public
+                $archivo->storeAs('public/Resguardos', $nuevoNombreArchivo);
+                
+                // Genera la URL accesible usando storage
+                $guard->picture = url("storage/Resguardos/{$nuevoNombreArchivo}");
+                
                 // $guard->picture = "https://api-imm.gomezconnect.com"."/Resguardos/".$nuevoNombreArchivo;
             }
 
