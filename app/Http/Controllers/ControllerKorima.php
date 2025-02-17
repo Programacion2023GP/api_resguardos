@@ -283,13 +283,23 @@ $guard->picture = url("storage/Korima/{$request->payroll}/{$request->korima}/{$n
         $response->data = ObjResponse::DefaultResponse();
         try {
             $korima = Korima::find($request->id);
+            $admin = Auth::user()->role ==1 || Auth::user()->role ==2 ?true :false;
+            $korima->archivist = $admin ? 1 : null;
             if ($korima) {
+                if (!$admin) {
                 $korima->autorized = $request->option==1?true:null;
+                }
                 if ($request->option==0) {
-                    $korima->motive_down = null;
-                    $korima->trauser_id = null;
-                    $korima->motivetransfer = null;
-
+                    $korima->archivist = $admin ? 0 : null;
+                    if (!$admin) {
+                        # code...
+                        $korima->motive_down = null;
+                        $korima->trauser_id = null;
+                        $korima->motivetransfer = null;
+                        
+                    }
+                    $korima->motivearchivist = $admin ? $request->motivearchivist : null;
+                    
                 }
                 $korima->update();
             }
