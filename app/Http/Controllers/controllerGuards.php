@@ -29,11 +29,11 @@ class controllerGuards extends Controller
 
                 $nombreArchivo = $archivo->getClientOriginalName();
                 $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
-                $archivo->move(public_path("Resguardos"), $nuevoNombreArchivo);
-                // $guard->picture = asset("Resguardos/" . $nuevoNombreArchivo);
-                // $guard->picture = url("storage/Resguardos/{$nuevoNombreArchivo}");
+                // $archivo->move(public_path("Resguardos"), $nuevoNombreArchivo);
                 $archivo->storeAs("public/Resguardos", $nuevoNombreArchivo);
                 $guard->picture = url("storage/Resguardos/{$nuevoNombreArchivo}");
+                // $guard->picture = asset("Resguardos/" . $nuevoNombreArchivo);
+                // $guard->picture = url("storage/Resguardos/{$nuevoNombreArchivo}");
                 // $archivo->move(public_path("Resguardos/"), $nuevoNombreArchivo);
                 // $guard->picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public" . "/Resguardos/" . $nuevoNombreArchivo;
                 // $guard->picture = "https://api-imm.gomezconnect.com"."/Resguardos/".$nuevoNombreArchivo;
@@ -184,30 +184,31 @@ class controllerGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
-    public function showOptions(Response $response, int $id) {
+    public function showOptions(Response $response, int $id)
+    {
         $response->data = ObjResponse::DefaultResponse();
         try {
             $user = User::find($id);
-    
+
             if (!$user) {
                 throw new \Exception("Usuario no encontrado.");
             }
-    
+
             $list = DB::table('guards')
                 ->select('guards.id', DB::raw('CONCAT(guards.stock_number, " ", guards.description) AS text'));
-    
+
             $userRole = Auth::user()->role;
             if ($userRole != 1 && $userRole != 2) {
                 $list = $list->where('guards.group', $user->group);
             }
-    
+
             $list = $list->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('user_guards')
                     ->whereColumn('user_guards.guards_id', 'guards.id')
                     ->where('user_guards.active', '=', 1);
             })->get();
-    
+
             $response->data = ObjResponse::CorrectResponse();
             $response->data["message"] = 'Petición satisfactoria | lista de usuarios.';
             $response->data["alert_text"] = "Usuarios encontrados";
@@ -215,10 +216,10 @@ class controllerGuards extends Controller
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());
         }
-    
+
         return response()->json($response, $response->data["status_code"]);
     }
-    
+
 
     public function indexall(Response $response)
     {
@@ -307,23 +308,23 @@ class controllerGuards extends Controller
             // $currentActiveStatus = DB::table('guards')->where('id', $request->id)->value('active');
             $user = DB::table('users')->where('id', $id)->first();
             // Si el estado actual es 0, simplemente lo cambiamos a 1
-                $affectedRows = DB::table('guards')
-                    ->where('id', $request->id)
-                    ->update(['motive' => 'transferencia de resguardo a ' . $user->name]);
-                    $affectedRows = DB::table('user_guards')
-                    ->where('guards_id', $request->id)
-                    ->update(['expecting' => 1,]);
-                if ($affectedRows === 0) {
-                    throw new \Exception('No se pudo transferir el resguardo.');
-                }
+            $affectedRows = DB::table('guards')
+                ->where('id', $request->id)
+                ->update(['motive' => 'transferencia de resguardo a ' . $user->name]);
+            $affectedRows = DB::table('user_guards')
+                ->where('guards_id', $request->id)
+                ->update(['expecting' => 1,]);
+            if ($affectedRows === 0) {
+                throw new \Exception('No se pudo transferir el resguardo.');
+            }
 
-                $response->data = ObjResponse::CorrectResponse();
-                $response->data["message"] = 'Petición satisfactoria | resguardo activado.';
-                $response->data["alert_text"] = 'Resguardo activado';
-            
-                // Si el estado actual es 1, realizamos la lógica original
-              
-            
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'Petición satisfactoria | resguardo activado.';
+            $response->data["alert_text"] = 'Resguardo activado';
+
+            // Si el estado actual es 1, realizamos la lógica original
+
+
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());
         }
