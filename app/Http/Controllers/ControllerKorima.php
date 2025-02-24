@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ControllerKorima extends Controller
 {
@@ -214,8 +215,14 @@ class ControllerKorima extends Controller
             }
         } catch (\Exception $ex) {
             // Manejo de errores y excepciones
-            $response = ObjResponse::CatchResponse($ex->getMessage());
-        }
+                $response = ObjResponse::CatchResponse($ex->getMessage());
+                Log::error('Error en update: ' . $ex->getMessage(), [
+                    'line' => $ex->getLine(),
+                    'file' => $ex->getFile(),
+                    'trace' => $ex->getTraceAsString()
+                ]);
+            
+                    }
 
         // Devuelve la respuesta como JSON
         return response()->json($response, $response["status_code"]);
