@@ -141,92 +141,72 @@ class ControllerKorima extends Controller
             // Busca el registro existente en la base de datos
             $guard = Korima::find($request->id);
             if (!$guard) {
-                // Si no se encuentra el registro, responde con un error
-                $response = ObjResponse::CatchResponse("No se encontró el registro con el ID proporcionado.");
+                return response()->json(ObjResponse::CatchResponse("No se encontró el registro con el ID proporcionado."), 404);
+            }
+
+            // Verifica si hay un archivo en la solicitud con el campo "picture"
+            if ($request->hasFile("picture")) {
+                $archivo = $request->file("picture");
+
+                // Obtén el nombre original del archivo y genera un nuevo nombre
+                $nombreArchivo = $archivo->getClientOriginalName();
+                $nuevoNombreArchivo = now()->format('Y-m-d_H-i-s') . '_' . $nombreArchivo;
+
+                // Almacena el archivo en `storage/app/public/Korima/...`
+                $archivo->storeAs("public/Korima/{$request->payroll}/{$request->korima}", $nuevoNombreArchivo);
+
+                // Genera la URL pública
+                $guard->picture = url("storage/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}");
+            }
+
+            // Verifica si hay un archivo en la solicitud con el campo "tag_picture"
+            if ($request->hasFile("tag_picture")) {
+                $archivo = $request->file("tag_picture");
+
+                // Obtén el nombre original del archivo y genera un nuevo nombre
+                $nombreArchivo = $archivo->getClientOriginalName();
+                $nuevoNombreArchivo = now()->format('Y-m-d_H-i-s') . '_' . $nombreArchivo;
+
+                // Almacena el archivo en `storage/app/public/Korima/...`
+                $archivo->storeAs("public/Korima/{$request->payroll}/{$request->korima}", $nuevoNombreArchivo);
+
+                // Genera la URL pública
+                $guard->tag_picture = url("storage/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}");
+            }
+
+            // Verifica y actualiza los campos 'korima' y 'observation' si están presentes en la solicitud
+            if ($request->has("korima")) {
+                $guard->korima = $request->korima;
+            }
+
+            if ($request->has("observation")) {
+                $guard->observation = $request->observation;
+            }
+
+            // Verifica si al menos un campo se ha modificado antes de actualizar
+            if ($request->hasFile("picture") || $request->hasFile("tag_picture") || $request->has("korima") || $request->has("observation")) {
+                $guard->save();
+                $response = ObjResponse::CorrectResponse();
+                $response["message"] = 'Datos actualizados exitosamente';
+                $response["alert_text"] = "El registro se ha actualizado correctamente";
             } else {
-                // Verifica si hay un archivo en la solicitud con el campo "picture"
-                if ($request->hasFile("picture")) {
-                    $archivo = $request->file("picture");
-
-                    // Obtén el nombre original del archivo y genera un nuevo nombre
-                    $nombreArchivo = $archivo->getClientOriginalName();
-                    $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
-
-                    // Mueve el archivo a la ruta deseada dentro de la carpeta `public`
-                    // $archivo->move(public_path("Korima/{$request->payroll}/{$request->korima}"), $nuevoNombreArchivo);
-
-                    // // Construye la URL pública correcta
-                    // $guard->picture = url("storage/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}");
-                    $archivo->storeAs("public/Korima/{$request->payroll}/{$request->korima}", $nuevoNombreArchivo);
-
-                    // Genera la URL correcta con `storage/`
-                    $guard->picture = url("storage/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}");
-
-
-                    // Guarda el valor de 'korima' en el objeto $guard
-
-                    // Construye la URL completa de la imagen
-                    // $guard->picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
-
-                    // O si estás usando el dominio de producción
-                }
-                if ($request->hasFile("tag_picture")) {
-                    $archivo = $request->file("tag_picture");
-
-                    // Obtén el nombre original del archivo y genera un nuevo nombre
-                    $nombreArchivo = $archivo->getClientOriginalName();
-                    $nuevoNombreArchivo = date('Y-m-d_H-i-s') . '_' . $nombreArchivo;
-
-                    // Mueve el archivo al directorio público
-                    // Mueve el archivo a la ruta deseada
-                    // $archivo->move(public_path("Korima/{$request->payroll}/{$request->korima}"), $nuevoNombreArchivo);
-                    // $guard->tag_picture = url("storage/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}");
-                    $archivo->storeAs("public/Korima/{$request->payroll}/{$request->korima}", $nuevoNombreArchivo);
-
-                    // Genera la URL correcta con `storage/`
-                    $guard->tag_picture = url("storage/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}");
-
-                    // Guarda el valor de 'korima' en el objeto $guard
-
-                    // Construye la URL completa de la imagen
-                    // $guard->tag_picture = "http://localhost:8000/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
-
-                    // O si estás usando el dominio de producción
-                    //     $guard->tag_picture = "https://api.resguardosinternos.gomezpalacio.gob.mx/public/Korima/{$request->payroll}/{$request->korima}/{$nuevoNombreArchivo}";
-                    // }
-                    // Verifica y actualiza los campos 'korima' y 'observation' si están presentes en la solicitud
-
-                    $guard->korima = $request->korima;
-                    $guard->observation = $request->observation ?? $guard->observation;
-                    if ($request->hasFile("picture") || $request->hasFile("tag_picture") || $request->observation) {
-                        $response = ObjResponse::CorrectResponse();
-                        $response["message"] = 'Datos actualizados exitosamente';
-                        $response["alert_text"] = "El registro se ha actualizado correctamente";
-                        // Si al menos uno de los campos tiene un valor, actualiza el registro
-                        $guard->update();
-                    } else {
-                        // Si no se proporciona el archivo
-                        $response = ObjResponse::CatchResponse("No se ha proporcionado ninguna imagen.");
-                    }
-                    // Guarda los cambios en la base de datos
-
-                    // Respuesta correcta
-                }
+                $response = ObjResponse::CatchResponse("No se ha proporcionado ninguna imagen ni cambios en los datos.");
             }
         } catch (\Exception $ex) {
+            return $ex->getMessage();
             // Manejo de errores y excepciones
-                $response = ObjResponse::CatchResponse($ex->getMessage());
-                Log::error('Error en update: ' . $ex->getMessage(), [
-                    'line' => $ex->getLine(),
-                    'file' => $ex->getFile(),
-                    'trace' => $ex->getTraceAsString()
-                ]);
-            
-                    }
+            Log::info('Error en update: ' . $ex->getMessage(), [
+                'line' => $ex->getLine(),
+                'file' => $ex->getFile(),
+                'trace' => $ex->getTraceAsString()
+            ]);
+            $response = ObjResponse::CatchResponse("Error al actualizar el registro. " . $ex->getMessage());
+        }
 
         // Devuelve la respuesta como JSON
         return response()->json($response, $response["status_code"]);
     }
+
     public function down(Request $request, Response $response)
     {
         $response->data = ObjResponse::DefaultResponse();
