@@ -285,7 +285,11 @@ class ControllerKorima extends Controller
                     }
                     $korima->motivearchivist = $admin ? $request->motivearchivist : null;
                 }
-                $korima->update();
+                if ($admin) {
+                    $korima->timestamps = false; // 🔥 Evita que se actualice updated_at
+                }
+    
+                $korima->save();
             }
 
             $response->data = ObjResponse::CorrectResponse();
