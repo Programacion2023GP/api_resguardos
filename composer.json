@@ -6,11 +6,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "cboden/ratchet": "^0.4.4",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "pusher/pusher-php-server": "*",
+        "ratchet/pawl": "^0.4.1",
+        "react/socket": "^1.16",
         "textalk/websocket": "^1.5",
         "wisembly/elephant.io": "^2.0"
     },
