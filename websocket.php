@@ -1,5 +1,8 @@
 <?php
 
+// Suppress deprecation warnings
+error_reporting(E_ALL & ~E_DEPRECATED);
+
 // archivo: server.php
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
