@@ -55,6 +55,7 @@ class controllerGuards extends Controller
             }
 
             $guard->stock_number = $nuevoStockNumber;
+            $guard->quantity = $request->{"quantity"};
 
 
             $guard->type_id = $request->{"type_id"};
@@ -116,6 +117,8 @@ class controllerGuards extends Controller
             $guard->number_korima = $request->{"number_korima"};
 
             $guard->type_id = $request->{"type_id"};
+            $guard->quantity = $request->{"quantity"};
+
             $guard->description = $request->{"description"};
             $guard->brand = $request->{"brand"};
             $guard->state_id = $request->{"state_id"};

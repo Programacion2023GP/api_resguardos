@@ -28,6 +28,7 @@ class Guards extends Model
         'description',
         'brand',
         'serial',
+        'quantity',
         'group',
         'type_id',
         'number_korima',
