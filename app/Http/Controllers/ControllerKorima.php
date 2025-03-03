@@ -116,7 +116,9 @@ class ControllerKorima extends Controller
             // $list = DB::select('SELECT * FROM users where active = 1');
             // User::on('mysql_gp_center')->get();
             $list = Korima::orderBy('id', 'desc')
+            ->leftjoin('users', 'users.id', 'korima.user_id')            //     ->where('payroll', $request->payroll)
                 ->where('active', 1)
+                ->select('korima.*','users.name','users.group')
 
                 ->get();
 
@@ -237,9 +239,9 @@ class ControllerKorima extends Controller
         try {
             $korima = Korima::find($request->id);
             if ($korima) {
-                $korima->trauser_id = $user->name;
+                $korima->trauser_id = $user->id;
                 $korima->motive_down = 'transferencia de resguardo a ' . $user->name;
-                $korima->user_id = $request->name;
+                $korima->user_id = $request->id;
 
                 $korima->motivetransfer = $request->motivetransfer;
 
@@ -248,9 +250,9 @@ class ControllerKorima extends Controller
             } else {
                 $korima = new Korima();
                 $korima->korima = $request->NumeroEconomicoKorima;
-                $korima->trauser_id = $user->name;
+                $korima->trauser_id = $user->id;
                 $korima->motive_down = 'transferencia de resguardo a ' . $user->name;
-                $korima->user_id = $request->name;
+                $korima->user_id = $request->id;
                 $korima->motivetransfer = $request->motivetransfer;
 
                 $korima->save();
