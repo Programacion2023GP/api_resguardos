@@ -115,12 +115,12 @@ class ControllerKorima extends Controller
         try {
             // $list = DB::select('SELECT * FROM users where active = 1');
             // User::on('mysql_gp_center')->get();
-            $list = Korima::orderBy('id', 'desc')
-            ->leftjoin('users', 'users.id', 'korima.trauser_id ')            //     ->where('payroll', $request->payroll)
-                ->where('korima.active', 1)
-                ->select('korima.*','users.name','users.group')
-
-                ->get();
+            $list = Korima::orderBy('korima.id', 'desc')
+            ->leftJoin('users', 'users.id', '=', 'korima.trauser_id')
+            ->where('korima.active', 1)
+            ->select('korima.*', 'users.name', 'users.group')
+            ->get();
+        
 
 
 
