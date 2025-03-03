@@ -117,7 +117,7 @@ class ControllerKorima extends Controller
             // User::on('mysql_gp_center')->get();
             $list = Korima::orderBy('id', 'desc')
             ->leftjoin('users', 'users.id', 'korima.user_id')            //     ->where('payroll', $request->payroll)
-                ->where('active', 1)
+                ->where('korima.active', 1)
                 ->select('korima.*','users.name','users.group')
 
                 ->get();
