@@ -34,6 +34,7 @@ class Guards extends Model
         'number_korima',
         'observations',
         'motive',
+        'aproved',
         'active',
     ];
     

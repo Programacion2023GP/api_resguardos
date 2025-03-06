@@ -116,11 +116,11 @@ class ControllerKorima extends Controller
             // $list = DB::select('SELECT * FROM users where active = 1');
             // User::on('mysql_gp_center')->get();
             $list = Korima::orderBy('korima.id', 'desc')
-            ->leftJoin('users', 'users.id', '=', 'korima.trauser_id')
-            ->where('korima.active', 1)
-            ->select('korima.*', 'users.name', 'users.group')
-            ->get();
-        
+                ->leftJoin('users', 'users.id', '=', 'korima.trauser_id')
+                ->where('korima.active', 1)
+                ->select('korima.*', 'users.name', 'users.group')
+                ->get();
+
 
 
 
@@ -290,7 +290,7 @@ class ControllerKorima extends Controller
                 if ($admin) {
                     $korima->timestamps = false; // 🔥 Evita que se actualice updated_at
                 }
-    
+
                 $korima->save();
             }
 
@@ -300,6 +300,59 @@ class ControllerKorima extends Controller
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());
         }
+        return response()->json($response, $response->data["status_code"]);
+    }
+    public function transferDepartament(Response $response, string $group)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+
+        try {
+            $transfers = Korima::select('korima.id','korima.korima','korima.autorized','korima.motive_down','korima.motivetransfer','korima.aproved_transfer',  'users.name', 'users.group')
+                ->join('users', 'korima.trauser_id', '=', 'users.id')
+                ->where('users.group', $group)
+                ->get();
+
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'peticion satisfactoria | lista de estado.';
+            $response->data["alert_text"] = "estado encontrados";
+            $response->data["result"] = $transfers;
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+
+        return response()->json($response, $response->data["status_code"]);
+    }
+    public function aproved(Response $response,Request $request){
+        $response->data = ObjResponse::DefaultResponse();
+
+        try {
+            $korima = Korima::find($request->id);
+            // return $korima;
+            if (!$korima) {
+                throw new \Exception("Reskorimao no encontrado.");
+            }
+          
+                $korima->aproved_transfer = $request->aproved;
+                if ($request->aproved ==0) {
+                    # code...
+                    $korima->motive_down = null;
+                    $korima->trauser_id = null;
+                    $korima->motivetransfer = null;
+                    $korima->aproved_transfer = null;
+
+                }
+                $korima->update();
+            
+
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'Resguardo aprobado exitosamente.';
+            $response->data["alert_text"] = "Resguardo aprobado";
+            $response->data["result"] = $korima;
+
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+
         return response()->json($response, $response->data["status_code"]);
     }
 }

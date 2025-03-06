@@ -67,8 +67,9 @@ class controllerGuards extends Controller
             $guard->serial = $request->{"serial"};
             if (Auth::user()->role == 3) {
                 $guard->group = Auth::user()->group;
-            } else {
 
+            } else {
+                $guard->aproved =1;
                 $guard->group = $request->{"group"};
             }
 
@@ -173,7 +174,14 @@ class controllerGuards extends Controller
 
                     break;
             }
-            $list = $list->get();
+            if (Auth::user()->role ==3) {
+                $list = $list->get();
+
+            }
+            else{
+
+                $list = $list->where('guards.aproved',1)->get();
+            }
 
 
 
@@ -187,6 +195,62 @@ class controllerGuards extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
+    public function showProccessAproved(Response $response){
+        // return "ddd";
+        $response->data = ObjResponse::DefaultResponse();
+
+        try {
+            $list = Guards::select(
+                'guards.*',
+                'types.name as Tipo',
+                'states.name as Estado',
+            )->orderBy('guards.id', 'desc')
+                ->leftjoin('types', 'types.id', '=', 'guards.type_id')
+                ->leftjoin('states', 'states.id', '=', 'guards.state_id')
+                ->groupBy('guards.id', 'types.name', 'states.name')
+                ->where('guards.aproved','<>',1)
+                ->get();
+                $response->data = ObjResponse::CorrectResponse();
+                $response->data["message"] = 'peticion satisfactoria | lista de resguardos.';
+                $response->data["alert_text"] = "resguardos encontrados";
+                $response->data["result"] = $list;
+
+        }catch(\Exception $ex){
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+            return response()->json($response, $response->data["status_code"]);
+        }
+        return response()->json($response, $response->data["status_code"]);
+
+    }
+    public function aproved(Response $response,Request $request){
+        $response->data = ObjResponse::DefaultResponse();
+
+        try {
+            $guard = Guards::find($request->id);
+            if (!$guard) {
+                throw new \Exception("Resguardo no encontrado.");
+            }
+            if ($request->aproved ==0) {
+                $guard->delete();
+                # code...
+            }
+            else{
+
+                $guard->aproved = $request->aproved;
+                $guard->update();
+            }
+
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'Resguardo aprobado exitosamente.';
+            $response->data["alert_text"] = "Resguardo aprobado";
+
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+
+        return response()->json($response, $response->data["status_code"]);
+    }
+
     public function showOptions(Response $response, int $id)
     {
         $response->data = ObjResponse::DefaultResponse();
@@ -202,7 +266,7 @@ class controllerGuards extends Controller
 
             $userRole = Auth::user()->role;
             if ($userRole != 1 && $userRole != 2) {
-                $list = $list->where('guards.group', $user->group);
+                $list = $list->where('guards.group', $user->group)->where('guards.aproved',1);
             }
 
             $list = $list->whereNotExists(function ($query) {

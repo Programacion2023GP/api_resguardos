@@ -31,26 +31,27 @@ Route::middleware('auth:sanctum')->group(function(){
     //NOTE - USUARIOS
     Route::get('/user/{id}', [ControllerUsers::class, 'user']);
     Route::get('/userslist', [ControllerUsers::class, 'userlist']);
-
+    
     Route::get('/user/nomina/{nomina}', [ControllerUsers::class, 'nomina']);
-
+    
     Route::get('/users/{role?}', [ControllerUsers::class, 'index']);
     Route::post('/users/firmas', [ControllerUsers::class, 'firmas']);
-
+    
     
     Route::post('/users/changepassword', [ControllerUsers::class, 'changepassword']);
-
+    
     Route::get('/reportsUsers', [ControllerUsers::class, 'reportsUsers']);
     Route::get('/allUsers', [ControllerUsers::class, 'allUsers']);
-
+    
     
     Route::post('/usersdestroy/{id}', [ControllerUsers::class, 'destroy']);
     Route::post('/usersupdate', [ControllerUsers::class, 'update']);
     Route::get('/changeEnlance/{usuarioAntiguoId}/{usuarioNuevoId}/{correonuevo}', [ControllerUsers::class, 'changeEnlance']);
-
+    
     //NOTE - PETICIONES PARA RESGUARDOS
     Route::post('/guards', [controllerGuards::class, 'create']);
     Route::get('/guards', [controllerGuards::class, 'index']);
+    Route::get('/guards/noaproved', [controllerGuards::class, 'showProccessAproved']);
     Route::get('/usersgroup/{group}/{id}', [ControllerUsers::class, 'group']);
 
     Route::post('/guardsdestroy/{id}', [controllerGuards::class, 'destroy']);
@@ -64,9 +65,12 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //NOTE - PETICIONES PARA ADMIN REPORTES DE GUARDS
     Route::get('/guards/admin', [controllerGuards::class, 'indexall']);
-        //NOTE - PETICIONES PARA RESGUARDAR
+    Route::post('/guards/aproved', [controllerGuards::class, 'aproved']);
+    // Route::get('/guards/noaproved', [controllerGuards::class, 'showProccessAproved']);
+    //NOTE - PETICIONES PARA RESGUARDAR
         
         Route::post('/usersguards/create', [ControllerUsersGuards::class, 'create']);
+
         Route::get('/usersguards/guardsUser/{id}', [ControllerUsersGuards::class, 'guardsUser']);
         Route::post('/usersguards/guardsdestroy/{id}', [ControllerUsersGuards::class, 'destroy']);
         Route::post('/usersguards/destroyguard/{id}', [ControllerUsersGuards::class, 'destroyguard']);
@@ -103,7 +107,11 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::get('/airlanesgroup/{id}', [ControllerAirlanesGroups::class, 'index']);
     
+    
     Route::get('/korima', [ControllerKorima::class, 'index']);
+    Route::post('/korima/aproved', [ControllerKorima::class, 'aproved']);
+
+    Route::get('/korima/transfers/{group}', [ControllerKorima::class, 'transferDepartament']);
     Route::post('/korima', [ControllerKorima::class, 'create']);
     Route::post('/korima/update', [ControllerKorima::class, 'update']);
     Route::post('/korima/down', [ControllerKorima::class, 'down']);

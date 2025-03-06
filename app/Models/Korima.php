@@ -21,6 +21,7 @@ class Korima extends Model
        'trauser_id',
        'motivetransfer',
        'archivist',
-       'motivearchivist'
+       'motivearchivist',
+       'aproved_transfer'
     ];
 }
