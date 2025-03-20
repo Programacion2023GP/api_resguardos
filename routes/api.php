@@ -23,6 +23,7 @@ use App\Http\Controllers\ControllerUsersGuards;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::get('/korima', [ControllerKorima::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function(){
     //NOTE - PETICIONES PARA CERRAR SESION    
@@ -108,7 +109,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/airlanesgroup/{id}', [ControllerAirlanesGroups::class, 'index']);
     
     
-    Route::get('/korima', [ControllerKorima::class, 'index']);
+    // Route::get('/korima', [ControllerKorima::class, 'index']);
     Route::post('/korima/aproved', [ControllerKorima::class, 'aproved']);
 
     Route::get('/korima/transfers/{group}', [ControllerKorima::class, 'transferDepartament']);

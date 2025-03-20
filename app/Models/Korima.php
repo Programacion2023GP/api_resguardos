@@ -22,6 +22,7 @@ class Korima extends Model
        'motivetransfer',
        'archivist',
        'motivearchivist',
-       'aproved_transfer'
+       'aproved_transfer',
+       'folio'
     ];
 }
