@@ -122,7 +122,7 @@ class ControllerKorima extends Controller
                 'korima.*',
                 'afterus.name as after_name',
                 'afterus.group as after_group',
-                // 'users.name',
+                'users.name',
                 'users.group'
             ])
             ->leftJoin('users as afterus', 'afterus.id', '=', 'korima.user_id')
