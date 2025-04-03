@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Korima;
+use App\Models\KorimaHistory;
 use App\Models\ObjResponse;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ControllerKorima extends Controller
@@ -115,11 +117,20 @@ class ControllerKorima extends Controller
         try {
             // $list = DB::select('SELECT * FROM users where active = 1');
             // User::on('mysql_gp_center')->get();
-            $list = Korima::orderBy('korima.id', 'desc')
-                ->leftJoin('users', 'users.id', '=', 'korima.trauser_id')
-                ->where('korima.active', 1)
-                ->select('korima.*', 'users.name', 'users.group')
-                ->get();
+            $list = Korima::query()
+            ->select([
+                'korima.*',
+                'afterus.name as after_name',
+                'afterus.group as after_group',
+                // 'users.name',
+                'users.group'
+            ])
+            ->leftJoin('users as afterus', 'afterus.id', '=', 'korima.user_id')
+            ->leftJoin('users', 'users.id', '=', 'korima.trauser_id')
+            ->where('korima.active', 1)
+            ->where('korima.autorized', 1)
+            ->orderBy('korima.id', 'desc')
+            ->get();
 
 
 
@@ -212,11 +223,13 @@ class ControllerKorima extends Controller
     public function down(Request $request, Response $response)
     {
         $response->data = ObjResponse::DefaultResponse();
+        $user = User::where('payroll', $request->payroll)->first();
         try {
             $korima = Korima::find($request->id);
             if ($korima) {
                 $korima->motive_down = $request->motive_down;
                 $korima->folio = $request->folio;
+                $korima->trauser_id = $user->id;
 
                 $korima->update();
             } else {
@@ -224,6 +237,7 @@ class ControllerKorima extends Controller
                 $korima->korima = $request->korima;
                 $korima->motive_down = $request->motive_down;
                 $korima->folio = $request->folio;
+                $korima->trauser_id = $user->id;
 
                 $korima->save();
             }
@@ -277,6 +291,7 @@ class ControllerKorima extends Controller
             $korima = Korima::find($request->id);
             $admin = Auth::user()->role == 1 || Auth::user()->role == 2 ? true : false;
             $korima->archivist = $admin ? 1 : null;
+
             if ($korima) {
                 if (!$admin) {
                     $korima->autorized = $request->option == 1 ? true : null;
@@ -294,7 +309,13 @@ class ControllerKorima extends Controller
                 if ($admin) {
                     $korima->timestamps = false; // 🔥 Evita que se actualice updated_at
                 }
-
+                return $korima  ;
+                $korimaHistory = new KorimaHistory();
+                $korimaHistory->korima_id = $korima->id;
+                $korimaHistory->movement = $korima->trauser_id ? 'transfer' : 'discharge';
+                $korimaHistory->userdown_id = $korima->user_id;
+                $korimaHistory->userup_id = $korima->trauser_id ? $korima->trauser_id : NULL;
+                $korimaHistory->save();
                 $korima->save();
             }
 
