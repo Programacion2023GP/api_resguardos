@@ -24,6 +24,7 @@ use App\Http\Controllers\ControllerUsersGuards;
 |
 */
 Route::get('/korima', [ControllerKorima::class, 'index']);
+Route::get('/korima/index', [ControllerKorima::class, 'oficios']);
 
 Route::middleware('auth:sanctum')->group(function(){
     //NOTE - PETICIONES PARA CERRAR SESION    

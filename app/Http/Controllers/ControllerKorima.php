@@ -117,13 +117,15 @@ class ControllerKorima extends Controller
         try {
             // $list = DB::select('SELECT * FROM users where active = 1');
             // User::on('mysql_gp_center')->get();
+          
+
             $list = Korima::orderBy('korima.id', 'desc')
-                ->leftJoin('users', 'users.id', '=', 'korima.trauser_id')
-                ->where('korima.active', 1)
-                ->select('korima.*', 'users.name', 'users.group')
-                ->get();
-
-
+            ->leftJoin('users', 'users.id', '=', 'korima.trauser_id')
+            ->leftJoin('users as afterus', 'afterus.id', '=', 'korima.user_id')
+            ->where('korima.active', 1)
+            ->select('korima.*', 'users.name', 'users.group', 'afterus.name as after_name',
+            'afterus.group as after_group')
+            ->get();
 
 
 
@@ -136,7 +138,40 @@ class ControllerKorima extends Controller
         }
         return response()->json($response, $response->data["status_code"]);
     }
+    public function oficios(Response $response)
+    {
+        $response->data = ObjResponse::DefaultResponse();
+        try {
+            // $list = DB::select('SELECT * FROM users where active = 1');
+            // User::on('mysql_gp_center')->get();
+          
 
+            $list = Korima::query()
+            ->select([
+                'korima.*',
+                'afterus.name as after_name',
+                'afterus.group as after_group',
+                'users.name',
+                'users.group'
+            ])
+            ->leftJoin('users as afterus', 'afterus.id', '=', 'korima.user_id')
+            ->leftJoin('users', 'users.id', '=', 'korima.trauser_id')
+            ->where('korima.active', 1)
+            ->where('korima.autorized', 1)
+            ->orderBy('korima.id', 'desc')
+            ->get();
+
+
+
+            $response->data = ObjResponse::CorrectResponse();
+            $response->data["message"] = 'peticion satisfactoria | lista de estado.';
+            $response->data["alert_text"] = "estado encontrados";
+            $response->data["result"] = $list;
+        } catch (\Exception $ex) {
+            $response->data = ObjResponse::CatchResponse($ex->getMessage());
+        }
+        return response()->json($response, $response->data["status_code"]);
+    }
     public function update(Request $request)
     {
         $response = ObjResponse::DefaultResponse();
@@ -244,18 +279,19 @@ class ControllerKorima extends Controller
     public function transfer(Request $request, Response $response)
     {
         $response->data = ObjResponse::DefaultResponse();
-        $user = User::where('id', $request->value)->first();
         try {
+            $userafter = User::where('payroll', $request->payroll)->first();
+            $user = User::where('id', $request->value)->first();
             $korima = Korima::find($request->id);
             if ($korima) {
                 $korima->trauser_id = $user->id;
                 $korima->motive_down = 'transferencia de resguardo a ' . $user->name;
-                $korima->user_id = $request->id;
+                $korima->user_id = $userafter->id;
 
                 $korima->motivetransfer = $request->motivetransfer;
 
 
-                $korima->update();
+                $korima->save();
             } else {
                 $korima = new Korima();
                 $korima->korima = $request->NumeroEconomicoKorima;
@@ -263,7 +299,6 @@ class ControllerKorima extends Controller
                 $korima->motive_down = 'transferencia de resguardo a ' . $user->name;
                 $korima->user_id = $request->id;
                 $korima->motivetransfer = $request->motivetransfer;
-
                 $korima->save();
             }
 
@@ -300,7 +335,6 @@ class ControllerKorima extends Controller
                 if ($admin) {
                     $korima->timestamps = false; // 🔥 Evita que se actualice updated_at
                 }
-                return $korima  ;
                 $korimaHistory = new KorimaHistory();
                 $korimaHistory->korima_id = $korima->id;
                 $korimaHistory->movement = $korima->trauser_id ? 'transfer' : 'discharge';
