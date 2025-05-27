@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ControllerAirlanes;
 use App\Http\Controllers\ControllerAirlanesGroups;
+use App\Http\Controllers\ControllerDepartaments;
 use App\Http\Controllers\ControllerGroups;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -108,7 +109,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/airlanesgroup', [ControllerAirlanesGroups::class, 'create']);
 
     Route::get('/airlanesgroup/{id}', [ControllerAirlanesGroups::class, 'index']);
-    
+
     
     // Route::get('/korima', [ControllerKorima::class, 'index']);
     Route::post('/korima/aproved', [ControllerKorima::class, 'aproved']);
@@ -138,6 +139,8 @@ Route::get('/hola', function () {
 });
 Route::post('/emitirEvento', [ControllerUsers::class, 'emitirEvento']);
 Route::post('/usersadminedit', [ControllerUsers::class, 'changeAdmin']);
+Route::get('/departaments', [ControllerDepartaments::class, 'index']);
+
 // Route::get('/charts/types', [ControllerUsersGuards::class, 'TypesCharts']);
 // Route::get('/charts/states', [ControllerUsersGuards::class, 'StatesCharts']);
 // Route::get('/charts/groups', [ControllerUsersGuards::class, 'groupsCharts']);
