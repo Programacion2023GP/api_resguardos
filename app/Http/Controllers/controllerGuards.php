@@ -154,47 +154,51 @@ class controllerGuards extends Controller
         $response->data = ObjResponse::DefaultResponse();
         try {
             $list = Guards::select(
-                'guards.*',
-                'types.name as Tipo',
-                'states.name as Estado',
-                'user_guards.active as resguard',
-                DB::raw('MAX(user_guards.expecting) as expecting')
-            )->orderBy('guards.id', 'desc')
-                ->leftjoin('types', 'types.id', '=', 'guards.type_id')
-                ->leftjoin('states', 'states.id', '=', 'guards.state_id')
-                ->leftjoin('user_guards', 'user_guards.guards_id', '=', 'guards.id')
-                ->groupBy('guards.id', 'types.name', 'states.name', 'user_guards.active');
+                    'guards.*',
+                    'types.name as Tipo',
+                    'states.name as Estado',
+                    DB::raw('MAX(user_guards.active) as resguard'),
+                    DB::raw('MAX(user_guards.expecting) as expecting')
+                )
+                ->orderBy('guards.id', 'desc')
+                ->leftJoin('types', 'types.id', '=', 'guards.type_id')
+                ->leftJoin('states', 'states.id', '=', 'guards.state_id')
+                ->leftJoin('user_guards', 'user_guards.guards_id', '=', 'guards.id')
+                ->groupBy('guards.id', 'types.name', 'states.name');
+    
+            // Filtrado por rol
             switch (Auth::user()->role) {
                 case 1:
+                    // Admin - sin restricciones
                     break;
                 case 2:
+                    // Otro rol - sin restricciones adicionales
                     break;
                 case 3:
+                    // Rol 3 - filtra por grupo
                     $list->where('guards.group', Auth::user()->group);
-
                     break;
             }
-            if (Auth::user()->role ==3) {
+    
+            // Rol 3 ve todo de su grupo, otros solo aprobados
+            if (Auth::user()->role == 3) {
                 $list = $list->get();
-
+            } else {
+                $list = $list->where('guards.aproved', 1)->get();
             }
-            else{
-
-                $list = $list->where('guards.aproved',1)->get();
-            }
-
-
-
-
+    
             $response->data = ObjResponse::CorrectResponse();
-            $response->data["message"] = 'peticion satisfactoria | lista de resguardos.';
-            $response->data["alert_text"] = "resguardos encontrados";
+            $response->data["message"] = 'Petición satisfactoria | lista de resguardos.';
+            $response->data["alert_text"] = "Resguardos encontrados";
             $response->data["result"] = $list;
+    
         } catch (\Exception $ex) {
             $response->data = ObjResponse::CatchResponse($ex->getMessage());
         }
+    
         return response()->json($response, $response->data["status_code"]);
     }
+    
     public function showProccessAproved(Response $response){
         // return "ddd";
         $response->data = ObjResponse::DefaultResponse();
